@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Grid.h"
 #include "GridTile.h"
+
 
 AGrid::AGrid(){
 	PrimaryActorTick.bCanEverTick = false; // disable update until e actually need it
@@ -26,17 +25,26 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	}
 
 	FVector location = GetActorLocation();
+	FVector scale = GetActorScale();
 	FRotator rotation = GetActorRotation();
 
 	for(int x = 0; x < CellsX; x++){
 		for(int y = 0; y < CellsY; y++){
 			for(int z = 0; z < CellsZ; z++){
-				FVector tileLocation = FVector(
-					location.X + (Offset.X*(float)x), 
-					location.Y + (Offset.Y*(float)y),
-					location.Z + (Offset.Z*(float)z)
+				
+				location = FVector(Offset.X*x, Offset.Y*y, Offset.Z*z);
+
+				FTransform const &tileTransform = { rotation, location, scale };
+				FActorSpawnParameters params = {};
+				params.Name = FName(FString::Printf(TEXT("Grid tile [%d, %d, %d]"), x, y, z));
+				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(
+					AGridTile::StaticClass(), 
+					tileTransform, 
+					params
 				);
-				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(tileLocation, rotation);
+
+				tileActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+
 				tileActor->SetMesh(TileMesh);
 				Grid[Vector3DPointToGrid(x, y, z)] = tileActor;
 			}
