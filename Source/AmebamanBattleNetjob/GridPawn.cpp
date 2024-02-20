@@ -24,10 +24,17 @@ void AGridPawn::SetOnGrid(FIntVector pos){
 	}
 
 	FVector location = Grid->GridToWorldLocation(pos);
-		UE_LOG(LogTemp, Display, TEXT("[GridPawn] Setting pawn position"));
+	float halfHeight = this->GetSimpleCollisionHalfHeight();
+	location.Z += halfHeight;
+
+	UE_LOG(LogTemp, Display, TEXT("[GridPawn] Setting pawn position (%f, %f, %f)"), location.X, location.Y, location.Z);
 	// UE_LOG(LogTemp, Display, TEXT("moving actor from (%d, %d) to (%d, %d)", 
 	// 	pos.X, pos.Y,
 	// 	location.X, location.Y));
+
+	// static int i = 0;
+	// GEngine->AddOnScreenDebugMessage(i++, 60.0, FColor::Cyan, "displayName: " + displayName);
+	// GEngine->AddOnScreenDebugMessage(i++, 60.0, FColor::Cyan, "playerUUID: " + playerUUID);
 
 	SetActorLocation(location);
 }
