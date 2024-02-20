@@ -5,6 +5,9 @@
 
 AGrid::AGrid(){
 	PrimaryActorTick.bCanEverTick = false; // disable update until e actually need it
+	if(TileBlueprint == nullptr) {
+		TileBlueprint = AGridTile::StaticClass();
+	}
 }
 
 // Called when the game starts or when spawned
@@ -12,14 +15,18 @@ void AGrid::BeginPlay() {
 	Super::BeginPlay();
 }
 
+inline void AGrid::GenerateGrid(FIntVector cells){
+	GenerateGrid(cells.X, cells.Y, cells.Z);
+}
+
 void AGrid::GenerateGrid(int width, int depth, int height) {
-	checkf (width || depth || height <= 0, TEXT("Grid dimensions must be bigger than 0"));
+	ensureMsgf (width || depth || height <= 0, TEXT("Grid dimensions must be bigger than 0"));
 
-	CellsX = width;
-	CellsY = depth;
-	CellsZ = height;
+	Cells.X = width;
+	Cells.Y = depth;
+	Cells.Z = height;
 
-	int gridArraySize = CellsX*CellsY*CellsZ;
+	int gridArraySize = Cells.X*Cells.Y*Cells.Z;
 	if(Grid.Num() <= gridArraySize){
 		Grid.SetNum(gridArraySize);
 	}
@@ -28,38 +35,62 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	FVector scale = GetActorScale();
 	FRotator rotation = GetActorRotation();
 
-	for(int x = 0; x < CellsX; x++){
-		for(int y = 0; y < CellsY; y++){
-			for(int z = 0; z < CellsZ; z++){
-				
+	for(int x = 0; x < Cells.X; x++){
+		for(int y = 0; y < Cells.Y; y++){
+			for(int z = 0; z < Cells.Z; z++){
+
 				location = FVector(Offset.X*x, Offset.Y*y, Offset.Z*z);
 
 				FTransform const &tileTransform = { rotation, location, scale };
 				FActorSpawnParameters params = {};
 				params.Name = FName(FString::Printf(TEXT("Grid tile [%d, %d, %d]"), x, y, z));
 				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(
-					AGridTile::StaticClass(), 
-					tileTransform, 
+					TileBlueprint,
+					tileTransform,
 					params
 				);
 
 				tileActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 
 				tileActor->SetMesh(TileMesh);
-				Grid[Vector3DPointToGrid(x, y, z)] = tileActor;
+				Grid[FIntVectorToGridArrayIndex(x, y, z)] = tileActor;
 			}
 		}
 	}
 }
 
-inline int AGrid::Vector3DPointToGrid(int x, int y, int z) {
-    return (z * CellsX * CellsY) + (y * CellsX) + x;
+
+// Conversions between grid location and world location
+inline FIntVector AGrid::WorldToGridLocation(FVector location) {
+	return {};
 }
 
-inline FVector AGrid::GridToPointVector3D(int idx) {
-    int z = idx / (CellsX * CellsY);
-    idx -= (z * CellsX * CellsY);
-    int y = idx / CellsX;
-    int x = idx % CellsX;
-    return FVector(x, y, z);
+inline FVector AGrid::GridToWorldLocation(int x, int y, int z) {
+	auto cell = Grid[FIntVectorToGridArrayIndex(x, y, z)];
+	float halfHeight = cell->GetSimpleCollisionHalfHeight();
+	FVector cellLocation = Grid[FIntVectorToGridArrayIndex(x, y, z)]->GetActorLocation();
+	cellLocation.Y += halfHeight + this->GetSimpleCollisionHalfHeight();
+	return cellLocation; 
+}
+
+inline FVector AGrid::GridToWorldLocation(FIntVector pos) {
+	return GridToWorldLocation(pos.X, pos.Y, pos.Z);
+}
+
+
+// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
+inline int AGrid::FIntVectorToGridArrayIndex(int x, int y, int z) {
+    return (z * Cells.X * Cells.Y) + (y * Cells.X) + x;
+}
+
+inline int AGrid::FIntVectorToGridArrayIndex(FIntVector index3D) {
+    return (index3D.Z * Cells.X * Cells.Y) + (index3D.Y * Cells.X) + index3D.X;
+}
+
+inline FIntVector AGrid::GridArrayIndexToFIntVector(int idx) {
+    int z = idx / (Cells.X * Cells.Y);
+    idx -= (z * Cells.X * Cells.Y);
+    int y = idx / Cells.X;
+    int x = idx % Cells.X;
+    return FIntVector(x, y, z);
 }

@@ -2,36 +2,43 @@
 
 
 #include "GridPawn.h"
+#include "EGridMovementDirection.h"
 
 // Sets default values
-AGridPawn::AGridPawn()
-{
+AGridPawn::AGridPawn() {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
 // Called when the game starts or when spawned
-void AGridPawn::BeginPlay()
-{
+void AGridPawn::BeginPlay() {
 	Super::BeginPlay();
+		UE_LOG(LogTemp, Error, TEXT("Grid is null for GridPawn! %p"), Grid);
+	SetOnGrid(InitialGridPos);
 }
 
+void AGridPawn::SetOnGrid(FIntVector pos){
+	if(Grid == nullptr){
+		UE_LOG(LogTemp, Error, TEXT("Grid is null for GridPawn!"));
+		return;
+	}
+
+	FVector location = Grid->GridToWorldLocation(pos);
+		UE_LOG(LogTemp, Display, TEXT("[GridPawn] Setting pawn position"));
+	// UE_LOG(LogTemp, Display, TEXT("moving actor from (%d, %d) to (%d, %d)", 
+	// 	pos.X, pos.Y,
+	// 	location.X, location.Y));
+
+	SetActorLocation(location);
+}
+
+void AGridPawn::MoveOnGrid(EGridMovementDirection direction, float actionValue){
+
+}
 
 // Called to bind functionality to input
-void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
-void AGridPawn::IA_Horizontal()
-{
-	UE_LOG(LogTemp, Display, TEXT("Horizontal"));    
-}
-
-void AGridPawn::IA_Vertical()
-{
-    UE_LOG(LogTemp, Display, TEXT("Vertical"));
 }
 
 

@@ -14,17 +14,19 @@ class AMEBAMANBATTLENETJOB_API AGrid : public AActor {
 public:
 	// Sets default values for this actor's properties
 	AGrid();
-	
+
+	// Conversions between grid location and world location
+	inline FIntVector WorldToGridLocation(FVector location);
+	inline FVector GridToWorldLocation(int x, int y, int z);
+	inline FVector GridToWorldLocation(FIntVector pos);
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int CellsX;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int CellsY;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int CellsZ;
+	FIntVector Cells;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Offset;
@@ -32,11 +34,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UStaticMesh *TileMesh;
 
-private:	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<AGridTile> TileBlueprint;
+
+
+private:
 	UFUNCTION(BlueprintCallable)
 	void GenerateGrid(int width, int depth, int height);
+	void GenerateGrid(FIntVector cells);
 
-	TArray<AGridTile*> Grid;
-	inline int Vector3DPointToGrid(int x, int y, int z);
-	inline FVector GridToPointVector3D(int idx);
+	TArray<AGridTile *> Grid;
+
+	// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
+	inline int FIntVectorToGridArrayIndex(int x, int y, int z);
+	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
+	inline FIntVector GridArrayIndexToFIntVector(int idx);
 };

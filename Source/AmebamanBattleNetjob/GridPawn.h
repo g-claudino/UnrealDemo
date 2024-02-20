@@ -2,47 +2,40 @@
 
 #pragma once
 
+#include "Grid.h"
+#include "EGridMovementDirection.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "Grid.h"
 #include "GridPawn.generated.h"
 
 
 UCLASS()
-class AMEBAMANBATTLENETJOB_API AGridPawn : public APawn
-{
+class AMEBAMANBATTLENETJOB_API AGridPawn : public APawn {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this pawn's properties
 	AGridPawn();
 
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FIntVector InitialGridPos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FIntVector GridPos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	AGrid *Grid;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-    //Sets Character Movement Speed to Sprint values.
-    void IA_Horizontal();
+	void SetOnGrid(FIntVector pos);
+    void MoveOnGrid(EGridMovementDirection direction, float actionValue);
 
-    //Sets Character Movement Speed back to default speed values.
-    void IA_Vertical();
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int GridX;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int GridY;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int GridZ;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	AGrid *Grid;
-
-public:	
-	// Called every frame
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };
