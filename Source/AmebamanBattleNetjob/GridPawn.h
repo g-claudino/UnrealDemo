@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntVector InitialGridPos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntVector GridPos;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

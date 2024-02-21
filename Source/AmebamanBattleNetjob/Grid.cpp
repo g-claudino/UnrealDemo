@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Grid.h"
 #include "GridTile.h"
+#include "CoreMinimal.h"
 
 
 AGrid::AGrid(){
@@ -15,8 +16,8 @@ void AGrid::BeginPlay() {
 	Super::BeginPlay();
 }
 
-inline void AGrid::GenerateGrid(FIntVector cells){
-	GenerateGrid(cells.X, cells.Y, cells.Z);
+inline void AGrid::GenerateGrid(FIntVector dimensions){
+	GenerateGrid(dimensions.X, dimensions.Y, dimensions.Z);
 }
 
 void AGrid::GenerateGrid(int width, int depth, int height) {
@@ -59,7 +60,6 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	}
 }
 
-
 // Conversions between grid location and world location
 inline FIntVector AGrid::WorldToGridLocation(FVector location) {
 	return {};
@@ -73,9 +73,28 @@ inline FVector AGrid::GridToWorldLocation(int x, int y, int z) {
 	return cellLocation; 
 }
 
-inline FVector AGrid::GridToWorldLocation(FIntVector pos) {
-	return GridToWorldLocation(pos.X, pos.Y, pos.Z);
+inline FVector AGrid::GridToWorldLocation(FIntVector location) {
+	return GridToWorldLocation(location.X, location.Y, location.Z);
 }
+
+inline bool AGrid::IsValidPosition(FIntVector location){
+	return  location.X >= 0 && location.X < Cells.X &&
+			location.Y >= 0 && location.Y < Cells.Y &&
+			location.Z >= 0 && location.Z < Cells.Z;
+}
+
+FIntVector AGrid::MoveInGrid(FIntVector currentLocation, FIntVector direction, int32 scale){
+	FIntVector target = currentLocation + direction * scale;
+	if(IsValidPosition(target)){
+		return target;
+	} else {
+		return currentLocation;
+	}
+}
+
+inline FIntVector AGrid::GetMovementDirectionX(){ return FIntVector {1, 0, 0}; }
+inline FIntVector AGrid::GetMovementDirectionY(){ return FIntVector {0, 1, 0}; }
+inline FIntVector AGrid::GetMovementDirectionZ(){ return FIntVector {0, 0, 1}; }
 
 
 // Conversions between [x, y, z] 3D array to [idx] 1D array of positions
