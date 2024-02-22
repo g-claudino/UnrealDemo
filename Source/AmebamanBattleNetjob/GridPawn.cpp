@@ -2,7 +2,6 @@
 
 
 #include "GridPawn.h"
-#include "EGridMovementDirection.h"
 
 // Sets default values
 AGridPawn::AGridPawn() {
@@ -37,10 +36,6 @@ void AGridPawn::SetOnGrid(FIntVector pos){
 	// GEngine->AddOnScreenDebugMessage(i++, 60.0, FColor::Cyan, "playerUUID: " + playerUUID);
 
 	SetActorLocation(location);
-}
-
-void AGridPawn::MoveOnGrid(EGridMovementDirection direction, float actionValue){
-
 }
 
 // Called to bind functionality to input

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Grid.h"
-#include "EGridMovementDirection.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
@@ -35,7 +34,5 @@ protected:
 	virtual void BeginPlay() override;
 
 	void SetOnGrid(FIntVector pos);
-    void MoveOnGrid(EGridMovementDirection direction, float actionValue);
-
 
 };

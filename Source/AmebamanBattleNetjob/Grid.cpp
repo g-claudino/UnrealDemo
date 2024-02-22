@@ -3,7 +3,6 @@
 #include "GridTile.h"
 #include "CoreMinimal.h"
 
-
 AGrid::AGrid(){
 	PrimaryActorTick.bCanEverTick = false; // disable update until e actually need it
 	if(TileBlueprint == nullptr) {
