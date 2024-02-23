@@ -43,7 +43,9 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 
 				FTransform const &tileTransform = { rotation, location, scale };
 				FActorSpawnParameters params = {};
-				params.Name = FName(FString::Printf(TEXT("Grid tile [%d, %d, %d]"), x, y, z));
+
+				// engine cannot handle same name for different objects, let it generate the name by itself
+				// params.Name = FName(FString::Printf(TEXT("Grid tile [%d, %d, %d]"), x, y, z));
 				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(
 					TileBlueprint,
 					tileTransform,

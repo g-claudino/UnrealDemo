@@ -12,7 +12,6 @@ AGridPawn::AGridPawn() {
 // Called when the game starts or when spawned
 void AGridPawn::BeginPlay() {
 	Super::BeginPlay();
-		UE_LOG(LogTemp, Error, TEXT("Grid is null for GridPawn! %p"), Grid);
 	SetOnGrid(InitialGridPos);
 }
 
@@ -41,6 +40,14 @@ void AGridPawn::SetOnGrid(FIntVector pos){
 // Called to bind functionality to input
 void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+
+inline float AGridPawn::Smoothstep(float t){
+	float t3 = t*t*t;
+	float t4 = t3*t;
+	float t5 = t4*t;
+	return 6*t5 - 15*t4 + 10*t3;
 }
 
 

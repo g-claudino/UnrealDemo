@@ -35,4 +35,6 @@ protected:
 
 	void SetOnGrid(FIntVector pos);
 
+	UFUNCTION(BlueprintCallable)
+	float Smoothstep(float t);
 };
