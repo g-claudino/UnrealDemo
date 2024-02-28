@@ -8,6 +8,7 @@ AGrid::AGrid(){
 	if(TileBlueprint == nullptr) {
 		TileBlueprint = AGridTile::StaticClass();
 	}
+	FVector scale = GetActorScale3D();
 }
 
 // Called when the game starts or when spawned
@@ -27,8 +28,8 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	Cells.Z = height;
 
 	int gridArraySize = Cells.X*Cells.Y*Cells.Z;
-	if(Grid.Num() <= gridArraySize){
-		Grid.SetNum(gridArraySize);
+	if(GridData.Num() <= gridArraySize){
+		GridData.SetNum(gridArraySize);
 	}
 
 	FVector location = GetActorLocation();
@@ -39,27 +40,48 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 		for(int y = 0; y < Cells.Y; y++){
 			for(int z = 0; z < Cells.Z; z++){
 
-				location = FVector(Offset.X*x, Offset.Y*y, Offset.Z*z);
 
+				location = FVector(Offset.X*x, Offset.Y*y, Offset.Z*z);
 				FTransform const &tileTransform = { rotation, location, scale };
-				FActorSpawnParameters params = {};
 
 				// engine cannot handle same name for different objects, let it generate the name by itself
-				// params.Name = FName(FString::Printf(TEXT("Grid tile [%d, %d, %d]"), x, y, z));
-				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(
-					TileBlueprint,
-					tileTransform,
-					params
-				);
-
+				// params.Name = FName(FString::Printf(TEXT("GridData tile [%d, %d, %d]"), x, y, z));
+				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(TileBlueprint, tileTransform);
 				tileActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 
-				tileActor->SetMesh(TileMesh);
-				Grid[FIntVectorToGridArrayIndex(x, y, z)] = tileActor;
+				int gridIndex = FIntVectorToGridArrayIndex(x, y, z);
+				GridData[gridIndex] = new FTileData();
+				GridData[gridIndex]->Id = gridIndex;
+				GridData[gridIndex]->Tile = tileActor;
+				GridData[gridIndex]->Pawn = nullptr;
+				// UE_LOG(
+				// 	LogTemp, 
+				// 	Display, 
+				// 	TEXT("[%s.GenerateGrid()] GridData[%d,%d,%d]: { .Id: %d .Tile: %p, .Pawn: %p }"), 
+				// 		*this->GetName(), 
+				// 		x, y, z,
+				// 		GridData[gridIndex]->Id,
+				// 		GridData[gridIndex]->Tile,
+				// 		GridData[gridIndex]->Pawn
+				// );
 			}
 		}
 	}
 }
+
+void AGrid::PlacePawnInGrid(AGridPawn *pawn, FIntVector gridPosition){
+	ensureMsgf(IsValidPosition(gridPosition), TEXT("Trying to place pawn in invalid grid position"));
+	
+	int gridIndex = FIntVectorToGridArrayIndex(gridPosition);
+	GridData[gridIndex]->Pawn = pawn;
+
+	FVector location = GridToWorldLocation(gridPosition);
+	float halfHeight = pawn->GetCollisionHalfHeight();
+	location.Z += halfHeight;
+	pawn->SetActorLocation(location);
+	GridPawnMap.Add(pawn->GetName(), GridData[gridIndex]);
+}
+
 
 // Conversions between grid location and world location
 inline FIntVector AGrid::WorldToGridLocation(FVector location) {
@@ -67,9 +89,10 @@ inline FIntVector AGrid::WorldToGridLocation(FVector location) {
 }
 
 inline FVector AGrid::GridToWorldLocation(int x, int y, int z) {
-	auto cell = Grid[FIntVectorToGridArrayIndex(x, y, z)];
+	int gridIndex = FIntVectorToGridArrayIndex(x, y, z);
+	auto cell = GridData[gridIndex]->Tile;
 	float halfHeight = cell->GetSimpleCollisionHalfHeight();
-	FVector cellLocation = Grid[FIntVectorToGridArrayIndex(x, y, z)]->GetActorLocation();
+	FVector cellLocation = GridData[gridIndex]->Tile->GetActorLocation();
 	cellLocation.Y += halfHeight + this->GetSimpleCollisionHalfHeight();
 	return cellLocation; 
 }
@@ -84,14 +107,30 @@ inline bool AGrid::IsValidPosition(FIntVector location){
 			location.Z >= 0 && location.Z < Cells.Z;
 }
 
-FIntVector AGrid::MoveInGrid(FIntVector currentLocation, FIntVector direction, int32 scale){
+
+bool AGrid::CalculateTargetGridPosition(AGridPawn *pawn, FIntVector direction, int32 scale, FIntVector &result){
+	FIntVector currentLocation = GridArrayIndexToFIntVector(GridPawnMap[pawn->GetName()]->Id);
+	return CalculateTargetGridPosition(currentLocation, direction, scale, result);
+}
+
+bool AGrid::CalculateTargetGridPosition(FIntVector currentLocation, FIntVector direction, int32 scale, FIntVector &result){
 	FIntVector target = currentLocation + direction * scale;
 	if(IsValidPosition(target)){
-		return target;
+		result = target;
+		return true;
 	} else {
-		return currentLocation;
+		return false;
 	}
 }
+
+
+// This method doesn't physically move the pawn in the engine, just update it's current grid coordinates
+void AGrid::MovePawnInGrid(AGridPawn *pawn, FIntVector newLocation){
+	GridData[GridPawnMap[pawn->GetName()]->Id]->Pawn = nullptr;
+	GridData[FIntVectorToGridArrayIndex(newLocation)]->Pawn = pawn;
+	GridPawnMap[pawn->GetName()] = GridData[FIntVectorToGridArrayIndex(newLocation)];
+}
+
 
 inline FIntVector AGrid::GetMovementDirectionX(){ return FIntVector {1, 0, 0}; }
 inline FIntVector AGrid::GetMovementDirectionY(){ return FIntVector {0, 1, 0}; }

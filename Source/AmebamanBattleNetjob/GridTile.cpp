@@ -13,7 +13,8 @@ AGridTile::AGridTile(FVector worldLocation, FVector worldScale, UStaticMesh *mes
 
 	StaticMesh = mesh;
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GridTileMesh"));
-	StaticMeshComponent->SetupAttachment(RootComponent);
+	SetRootComponent(StaticMeshComponent);
+	// StaticMeshComponent->SetupAttachment(RootComponent);
 	StaticMeshComponent->SetRelativeLocation(FVector(0.0, 0.0, 0.0));
 	SetMesh(StaticMesh);
 }

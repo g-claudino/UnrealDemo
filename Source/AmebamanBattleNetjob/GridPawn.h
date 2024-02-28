@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "Grid.h"
-
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Components/CapsuleComponent.h" 
+
 #include "GridPawn.generated.h"
 
+class AGrid;
+class ABattleManager;
 
 UCLASS()
 class AMEBAMANBATTLENETJOB_API AGridPawn : public APawn {
@@ -20,21 +22,27 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	void Setup(AGrid *grid, ABattleManager *battleManager);
+
+	float GetCollisionHalfHeight();
+
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntVector InitialGridPos;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntVector GridPos;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	AGrid *Grid;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ABattleManager *BattleManager;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void SetOnGrid(FIntVector pos);
+	UFUNCTION(BlueprintCallable)
+	void Attack(FIntVector target);
 
 	UFUNCTION(BlueprintCallable)
 	float Smoothstep(float t);
+
+private:
+	UPROPERTY()
+	UCapsuleComponent *CapsuleCollision;
 };

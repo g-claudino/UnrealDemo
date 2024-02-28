@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Components/CapsuleComponent.h" 
+#include "Grid.h"
+#include "BattleManager.h"
 #include "GridPawn.h"
 
 // Sets default values
@@ -12,34 +15,27 @@ AGridPawn::AGridPawn() {
 // Called when the game starts or when spawned
 void AGridPawn::BeginPlay() {
 	Super::BeginPlay();
-	SetOnGrid(InitialGridPos);
+	CapsuleCollision = FindComponentByClass<UCapsuleComponent>();
 }
 
-void AGridPawn::SetOnGrid(FIntVector pos){
-	if(Grid == nullptr){
-		UE_LOG(LogTemp, Error, TEXT("Grid is null for GridPawn!"));
-		return;
-	}
-
-	FVector location = Grid->GridToWorldLocation(pos);
-	float halfHeight = this->GetSimpleCollisionHalfHeight();
-	location.Z += halfHeight;
-
-	UE_LOG(LogTemp, Display, TEXT("[GridPawn] Setting pawn position (%f, %f, %f)"), location.X, location.Y, location.Z);
-	// UE_LOG(LogTemp, Display, TEXT("moving actor from (%d, %d) to (%d, %d)", 
-	// 	pos.X, pos.Y,
-	// 	location.X, location.Y));
-
-	// static int i = 0;
-	// GEngine->AddOnScreenDebugMessage(i++, 60.0, FColor::Cyan, "displayName: " + displayName);
-	// GEngine->AddOnScreenDebugMessage(i++, 60.0, FColor::Cyan, "playerUUID: " + playerUUID);
-
-	SetActorLocation(location);
+void AGridPawn::Setup(AGrid *grid, ABattleManager *battleManager){
+	Grid = grid;
+	BattleManager = battleManager;
 }
+
+
+inline float AGridPawn::GetCollisionHalfHeight(){
+	return CapsuleCollision->GetScaledCapsuleHalfHeight();
+}
+
 
 // Called to bind functionality to input
 void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AGridPawn::Attack(FIntVector target){
+	BattleManager->PlayerAttackCallback(target);
 }
 
 
