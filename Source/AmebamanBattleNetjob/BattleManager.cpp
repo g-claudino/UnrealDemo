@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h" 
 #include "BattleManager.h"
 
+
 // Sets default values
 ABattleManager::ABattleManager(){
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -16,12 +17,12 @@ void ABattleManager::BeginPlay(){
 
 void ABattleManager::SetupBattle(){
 	auto world = GetWorld();
-	const FTransform &playerTransform = { 
+	const FTransform &playerTransform = {
 		{0, 0, 0}, 
 		{0, 0, 0}, 
 		{1, 1, 1} 
 	};
-	const FTransform &enemyTransform = { 
+	const FTransform &enemyTransform = {
 		{0, 0, 0}, 
 		{0, 430, 0}, 
 		{1, 1, 1} 

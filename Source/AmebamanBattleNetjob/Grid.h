@@ -10,7 +10,7 @@
 
 // Should this be a class so UE can manage memory? does it handle structs with pointers properly? I think this will cause memory leaks
 USTRUCT()
-struct FTileData{
+struct FTileData {
 	GENERATED_BODY()
 
 public:
@@ -20,6 +20,7 @@ public:
 	UPROPERTY()
 	AGridTile *Tile;
 };
+
 
 UCLASS()
 class AMEBAMANBATTLENETJOB_API AGrid : public AActor {
@@ -55,9 +56,6 @@ public:
 	inline FVector GridToWorldLocation(FIntVector location);
 	inline FVector GridToWorldLocation(int x, int y, int z);
 
-	UFUNCTION(BlueprintCallable)
-	inline bool IsValidPosition(FIntVector location);
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Offset;
 
@@ -71,6 +69,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AGridTile> TileBlueprint;
 
+	UFUNCTION(BlueprintCallable)
+	inline bool IsValidPosition(FIntVector location);
+	UFUNCTION(BlueprintCallable)
+	inline bool IsLocationInBounds(FIntVector location);
+	UFUNCTION(BlueprintCallable)
+	inline bool IsGridLocationEmpty(FIntVector location);
 
 private:
 	TArray<FTileData *> GridData;

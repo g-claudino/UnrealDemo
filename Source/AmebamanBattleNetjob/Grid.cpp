@@ -39,8 +39,6 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	for(int x = 0; x < Cells.X; x++){
 		for(int y = 0; y < Cells.Y; y++){
 			for(int z = 0; z < Cells.Z; z++){
-
-
 				location = FVector(Offset.X*x, Offset.Y*y, Offset.Z*z);
 				FTransform const &tileTransform = { rotation, location, scale };
 
@@ -102,9 +100,17 @@ inline FVector AGrid::GridToWorldLocation(FIntVector location) {
 }
 
 inline bool AGrid::IsValidPosition(FIntVector location){
+	return IsLocationInBounds(location) && IsGridLocationEmpty(location);
+}
+
+inline bool AGrid::IsLocationInBounds(FIntVector location){
 	return  location.X >= 0 && location.X < Cells.X &&
 			location.Y >= 0 && location.Y < Cells.Y &&
 			location.Z >= 0 && location.Z < Cells.Z;
+}
+
+inline bool AGrid::IsGridLocationEmpty(FIntVector location){
+	return GridData[FIntVectorToGridArrayIndex(location)]->Pawn == nullptr;
 }
 
 
