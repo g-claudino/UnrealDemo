@@ -27,6 +27,9 @@ public:
 
 	float GetCollisionHalfHeight();
 
+	UFUNCTION(BlueprintCallable)
+	void Damage(int damage);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	AGrid *Grid;
@@ -41,7 +44,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	float Smoothstep(float t);
-
+	
+	UPROPERTY(BluePrintReadOnly)
+	int32 HP;
+	UPROPERTY(EditAnywhere, BluePrintReadOnly)
+	int32 MaxHP;
 private:
 	UPROPERTY()
 	UCapsuleComponent *CapsuleCollision;

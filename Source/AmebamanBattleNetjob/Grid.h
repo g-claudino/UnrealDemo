@@ -56,8 +56,16 @@ public:
 	inline FVector GridToWorldLocation(FIntVector location);
 	inline FVector GridToWorldLocation(int x, int y, int z);
 
+	UFUNCTION()
+	bool GetPawnInfo(AGridPawn *pawn, FTileData& result);
+	bool GetPawnInfo(FIntVector gridLocation, FTileData& result);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Offset;
+		// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
+	inline int FIntVectorToGridArrayIndex(int x, int y, int z);
+	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
+	inline FIntVector GridArrayIndexToFIntVector(int idx);
 
 protected:
 	// Called when the game starts or when spawned
@@ -77,11 +85,8 @@ protected:
 	inline bool IsGridLocationEmpty(FIntVector location);
 
 private:
+	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
 	TArray<FTileData *> GridData;
+	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
 	TMap<FString, FTileData *> GridPawnMap;
-
-	// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
-	inline int FIntVectorToGridArrayIndex(int x, int y, int z);
-	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
-	inline FIntVector GridArrayIndexToFIntVector(int idx);
 };
