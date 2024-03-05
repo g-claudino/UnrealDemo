@@ -36,6 +36,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ABattleManager *BattleManager;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDamage(int32 damage, int32 currentHealth);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnKill();
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -46,7 +51,7 @@ protected:
 	float Smoothstep(float t);
 	
 	UPROPERTY(BluePrintReadOnly)
-	int32 HP;
+	int32 CurrentHealth;
 	UPROPERTY(EditAnywhere, BluePrintReadOnly)
 	int32 MaxHP;
 private:

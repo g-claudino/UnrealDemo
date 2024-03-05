@@ -15,7 +15,7 @@ AGridPawn::AGridPawn() {
 // Called when the game starts or when spawned
 void AGridPawn::BeginPlay() {
 	Super::BeginPlay();
-	HP = MaxHP;
+	CurrentHealth = MaxHP;
 	CapsuleCollision = FindComponentByClass<UCapsuleComponent>();
 }
 
@@ -48,10 +48,12 @@ inline float AGridPawn::Smoothstep(float t){
 }
 
 void AGridPawn::Damage(int32 damage){
-	HP -= damage;
-	if(HP <= 0){
-		UE_LOG(LogTemp, Display, TEXT("[%s.Damage()] Player is gone"), *this->GetName());
+	CurrentHealth -= damage;
+	if(CurrentHealth <= 0){
+		OnKill();
 	}
+	else{
+		OnDamage(damage, CurrentHealth);
+		}
 }
-
 
