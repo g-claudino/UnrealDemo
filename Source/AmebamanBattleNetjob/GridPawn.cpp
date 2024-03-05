@@ -36,7 +36,7 @@ void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void AGridPawn::Attack(FIntVector target){
-	BattleManager->PlayerAttackCallback(target, 1);
+	BattleManager->PlayerAttackCallback(target, 1); // TODO refactor this hardcoded so the damage value originates from attack/skill dmg value
 }
 
 
@@ -47,31 +47,10 @@ inline float AGridPawn::Smoothstep(float t){
 	return 6*t5 - 15*t4 + 10*t3;
 }
 
-void AGridPawn::Damage(int damage){
-	HP-=damage;
-		UE_LOG(
-		LogTemp, 
-		Display, 
-		TEXT("[%s.Damage()] Current HP is %d"), 
-			*this->GetName(), 
-			HP
-			);
+void AGridPawn::Damage(int32 damage){
+	HP -= damage;
 	if(HP <= 0){
-		UE_LOG(
-			LogTemp, 
-			Display, 
-			TEXT("[%s.Damage()] Player is gone"), 
-				*this->GetName() 
-				);
-	}
-	else{
-		UE_LOG(
-		LogTemp, 
-		Display, 
-		TEXT("[%s.Damage()] Current HP is %d"), 
-			*this->GetName(), 
-			HP
-			);
+		UE_LOG(LogTemp, Display, TEXT("[%s.Damage()] Player is gone"), *this->GetName());
 	}
 }
 

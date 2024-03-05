@@ -28,7 +28,7 @@ public:
 	float GetCollisionHalfHeight();
 
 	UFUNCTION(BlueprintCallable)
-	void Damage(int damage);
+	void Damage(int32 damage);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

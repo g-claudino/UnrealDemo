@@ -165,10 +165,10 @@ bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) {
 	if (data == nullptr){
 		return false;
 	}
-	else{
-		result = *data;
-		return true;
-	}
+
+	result = *data;
+	return true;
+
 }
 
 bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
@@ -176,8 +176,7 @@ bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
 	if (data == nullptr){
 		return false;
 	}
-	else{
-		result = *data;
-		return true;
-	}
+
+	result = *data;
+	return true;
 }

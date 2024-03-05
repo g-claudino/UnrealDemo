@@ -66,7 +66,7 @@ void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
 
 void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){
 	FTileData tileData;
-	if (PlayerGrid->GetPawnInfo(Player,tileData)){
+	if (PlayerGrid->GetPawnInfo(Player, tileData)){
 		int playerLocationID = tileData.Id;
 		FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationID);
 		FIntVector target = playerLocationVec+target_offset;
@@ -82,7 +82,7 @@ void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
 void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage){
 	
 	FTileData gridData;
-	if (grid->GetPawnInfo(target,gridData)){
+	if (grid->GetPawnInfo(target, gridData)){
 		AGridPawn* gridPawnInLocation = gridData.Pawn;
 		if (gridPawnInLocation != nullptr){
 			gridPawnInLocation -> Damage(damage);		
