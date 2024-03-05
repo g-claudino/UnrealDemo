@@ -66,7 +66,7 @@ private:
 	void SpawnEnemies(UWorld *world, const FTransform &transform);
 
 public:
-	void PlayerAttackCallback(FIntVector target);
-	void EnemyAttackCallback(FIntVector target);
-	void AttackOnGrid(AGrid* grid, FIntVector target);
+	void PlayerAttackCallback(FIntVector target_offset, int damage);
+	void EnemyAttackCallback(FIntVector target_offset, int damage);
+	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
 };

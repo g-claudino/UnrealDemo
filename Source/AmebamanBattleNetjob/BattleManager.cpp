@@ -62,25 +62,31 @@ void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
 	}
 }
 
-void ABattleManager::PlayerAttackCallback(FIntVector target){
-	AttackOnGrid(EnemyGrid, target);
+
+
+void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){
+	FTileData tileData;
+	if (PlayerGrid->GetPawnInfo(Player, tileData)){
+		int playerLocationID = tileData.Id;
+		FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationID);
+		FIntVector target = playerLocationVec+target_offset;
+		ExecuteAttackOnGrid(EnemyGrid, target, damage);
+	}
+	
 }
 
-void ABattleManager::EnemyAttackCallback(FIntVector target){
-	AttackOnGrid(PlayerGrid, target);
+void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
+	ExecuteAttackOnGrid(PlayerGrid, target_offset, damage);
 }
 
-void ABattleManager::AttackOnGrid(AGrid* grid, FIntVector target){
-	// TODO when setting a pawn on the grid, make the grid aware of the pawn so we can do collision 
-	// checks for movement -- this means we can delegate pawn management to the grid instead of this
-	// battle manager and we can differentiate between grids
-	// for now this will always target enemy grid, just to test for damage, etc
-	for(int i = 0; i < Enemies.Num(); i++){
-		// TODO change this to query the grid for what is in this position
-
-		// TODO: Create AI controller for this
-		// auto controller = UGameplayStatics::GetSOMEAIController(world, 0);
-		// controller->Possess(enemy);
+void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage){
+	
+	FTileData gridData;
+	if (grid->GetPawnInfo(target, gridData)){
+		AGridPawn* gridPawnInLocation = gridData.Pawn;
+		if (gridPawnInLocation != nullptr){
+			gridPawnInLocation -> Damage(damage);		
+		}
 	}
 }
 

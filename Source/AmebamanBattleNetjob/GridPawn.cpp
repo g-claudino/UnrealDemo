@@ -15,6 +15,7 @@ AGridPawn::AGridPawn() {
 // Called when the game starts or when spawned
 void AGridPawn::BeginPlay() {
 	Super::BeginPlay();
+	HP = MaxHP;
 	CapsuleCollision = FindComponentByClass<UCapsuleComponent>();
 }
 
@@ -35,7 +36,7 @@ void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void AGridPawn::Attack(FIntVector target){
-	BattleManager->PlayerAttackCallback(target);
+	BattleManager->PlayerAttackCallback(target, 1); // TODO refactor this hardcoded so the damage value originates from attack/skill dmg value
 }
 
 
@@ -44,6 +45,13 @@ inline float AGridPawn::Smoothstep(float t){
 	float t4 = t3*t;
 	float t5 = t4*t;
 	return 6*t5 - 15*t4 + 10*t3;
+}
+
+void AGridPawn::Damage(int32 damage){
+	HP -= damage;
+	if(HP <= 0){
+		UE_LOG(LogTemp, Display, TEXT("[%s.Damage()] Player is gone"), *this->GetName());
+	}
 }
 
 

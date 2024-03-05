@@ -159,3 +159,24 @@ inline FIntVector AGrid::GridArrayIndexToFIntVector(int idx) {
     int x = idx % Cells.X;
     return FIntVector(x, y, z);
 }
+
+bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) { 
+	FTileData* data = GridPawnMap[pawn->GetName()];
+	if (data == nullptr){
+		return false;
+	}
+
+	result = *data;
+	return true;
+
+}
+
+bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
+	FTileData* data = GridData[FIntVectorToGridArrayIndex(gridLocation)];
+	if (data == nullptr){
+		return false;
+	}
+
+	result = *data;
+	return true;
+}
