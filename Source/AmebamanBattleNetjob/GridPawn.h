@@ -54,6 +54,7 @@ protected:
 	int32 CurrentHealth;
 	UPROPERTY(EditAnywhere, BluePrintReadOnly)
 	int32 MaxHP;
+
 private:
 	UPROPERTY()
 	UCapsuleComponent *CapsuleCollision;

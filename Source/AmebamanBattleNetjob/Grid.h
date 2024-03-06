@@ -66,7 +66,6 @@ public:
 	inline int FIntVectorToGridArrayIndex(int x, int y, int z);
 	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
 	inline FIntVector GridArrayIndexToFIntVector(int idx);
-
 	void RemovePawnFromGrid(AGridPawn* pawn);
 
 protected:

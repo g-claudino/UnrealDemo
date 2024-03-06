@@ -51,9 +51,9 @@ void AGridPawn::Damage(int32 damage){
 	CurrentHealth -= damage;
 	if(CurrentHealth <= 0){
 		OnKill();
-	}
-	else{
+	} else {
 		OnDamage(damage, CurrentHealth);
-		}
+	}
 }
+
 
