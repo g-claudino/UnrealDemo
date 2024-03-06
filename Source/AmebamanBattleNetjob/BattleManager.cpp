@@ -72,7 +72,6 @@ void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){
 		FIntVector target = playerLocationVec+target_offset;
 		ExecuteAttackOnGrid(EnemyGrid, target, damage);
 	}
-	
 }
 
 void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
@@ -80,21 +79,25 @@ void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
 }
 
 void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage){
-	
 	FTileData gridData;
 	if (grid->GetPawnInfo(target, gridData)){
 		AGridPawn* gridPawnInLocation = gridData.Pawn;
 		if (gridPawnInLocation != nullptr){
-			gridPawnInLocation -> Damage(damage);		
+			gridPawnInLocation -> DamagePawn(damage);
 		}
 	}
 }
 
 void ABattleManager::RemovePawnFromGrid(AGridPawn* pawn){
-	FTileData _;
-	if (EnemyGrid->GetPawnInfo(pawn, _)){
-		EnemyGrid->RemovePawnFromGrid(pawn);
+	if(EnemyGrid->IsPawnInGrid(pawn)){
+		if(EnemyGrid->RemovePawnFromGrid(pawn) <= 0){
+			OnBattleWon();
+		}
 	} else {
-		PlayerGrid->RemovePawnFromGrid(pawn);
+		// do we really need to do this? if player died we'll stop current game flow/logic and go to
+		// a game over flow, so we dont really need to do anything in the grid or destroy the actor?
+		if(PlayerGrid->RemovePawnFromGrid(pawn) <= 0){
+			OnBattleLost();
+		}
 	}
 }

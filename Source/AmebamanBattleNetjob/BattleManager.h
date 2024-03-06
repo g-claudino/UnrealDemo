@@ -10,7 +10,7 @@
 #include "GameFramework/Actor.h"
 #include "BattleManager.generated.h"
 
-// TODO
+// TODO make attack function a delegate to remove pawn dependency on the battle manager
 // typedef void (ABattleManager::*AttackDelegate)(FIntVector target);
 
 
@@ -32,6 +32,10 @@ protected:
 	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintCallable)
 	void SetupBattle();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBattleWon();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBattleLost();
 	
 	UPROPERTY(EditAnywhere)
 	FVector gridTilesOffset = FVector{110, 110, 1100};
@@ -42,13 +46,13 @@ protected:
 	AGrid *PlayerGrid;
 	UPROPERTY()
 	AGridPawn *Player;
-	UPROPERTY(EditAnywhere, Category="Player")
+	UPROPERTY(EditDefaultsOnly, Category="Player")
 	FIntVector PlayerGridInitialLocation;
-	UPROPERTY(EditAnywhere, Category="Player")
+	UPROPERTY(EditDefaultsOnly, Category="Player")
 	FIntVector PlayerGridDimensions;
-	UPROPERTY(EditAnywhere, Category="Player")
+	UPROPERTY(EditDefaultsOnly, Category="Player")
 	TSubclassOf<AGrid> PlayerGridBlueprint;
-	UPROPERTY(EditAnywhere, Category="Player")
+	UPROPERTY(EditDefaultsOnly, Category="Player")
 	TSubclassOf<AGridPawn> PlayerBlueprint;
 
 
@@ -57,13 +61,13 @@ protected:
 	AGrid *EnemyGrid;
 	UPROPERTY()
 	TArray<class AGridPawn *> Enemies;
-	UPROPERTY(EditAnywhere, Category="Enemies")
+	UPROPERTY(EditDefaultsOnly, Category="Enemies")
 	TArray<FIntVector> EnemiesGridInitialLocation;
-	UPROPERTY(EditAnywhere, Category="Enemies")
+	UPROPERTY(EditDefaultsOnly, Category="Enemies")
 	FIntVector EnemyGridDimensions;
-	UPROPERTY(EditAnywhere, Category="Enemies")
+	UPROPERTY(EditDefaultsOnly, Category="Enemies")
 	TSubclassOf<AGrid> EnemyGridBlueprint;
-	UPROPERTY(EditAnywhere, Category="Enemies")
+	UPROPERTY(EditDefaultsOnly, Category="Enemies")
 	TArray<TSubclassOf<AGridPawn>> EnemyBlueprint;
 
 private:
