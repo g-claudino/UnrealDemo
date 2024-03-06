@@ -90,3 +90,11 @@ void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int dam
 	}
 }
 
+void ABattleManager::RemovePawnFromGrid(AGridPawn* pawn){
+	FTileData _;
+	if (EnemyGrid->GetPawnInfo(pawn, _)){
+		EnemyGrid->RemovePawnFromGrid(pawn);
+	} else {
+		PlayerGrid->RemovePawnFromGrid(pawn);
+	}
+}

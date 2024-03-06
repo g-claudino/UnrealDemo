@@ -67,6 +67,8 @@ public:
 	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
 	inline FIntVector GridArrayIndexToFIntVector(int idx);
 
+	void RemovePawnFromGrid(AGridPawn* pawn);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

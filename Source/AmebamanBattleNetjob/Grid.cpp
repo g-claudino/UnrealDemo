@@ -180,3 +180,7 @@ bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
 	result = *data;
 	return true;
 }
+
+void AGrid::RemovePawnFromGrid(AGridPawn* pawn){
+	GridPawnMap.FindAndRemoveChecked(pawn->GetName());
+}

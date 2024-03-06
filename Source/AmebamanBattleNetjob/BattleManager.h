@@ -21,6 +21,11 @@ class AMEBAMANBATTLENETJOB_API ABattleManager : public AActor {
 public:	
 	// Sets default values for this actor's properties
 	ABattleManager();
+	void PlayerAttackCallback(FIntVector target_offset, int damage);
+	void EnemyAttackCallback(FIntVector target_offset, int damage);
+	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
+	UFUNCTION(BlueprintCallable)
+	void RemovePawnFromGrid(AGridPawn* pawn);
 
 protected:
 	// Called when the game starts or when spawned
@@ -64,9 +69,4 @@ protected:
 private:
 	void SpawnPlayer(UWorld *world, const FTransform &transform);
 	void SpawnEnemies(UWorld *world, const FTransform &transform);
-
-public:
-	void PlayerAttackCallback(FIntVector target_offset, int damage);
-	void EnemyAttackCallback(FIntVector target_offset, int damage);
-	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
 };
