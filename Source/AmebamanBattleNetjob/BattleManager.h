@@ -46,13 +46,13 @@ protected:
 	AGrid *PlayerGrid;
 	UPROPERTY()
 	AGridPawn *Player;
-	UPROPERTY(EditDefaultsOnly, Category="Player")
+	UPROPERTY(EditAnywhere, Category="Player")
 	FIntVector PlayerGridInitialLocation;
-	UPROPERTY(EditDefaultsOnly, Category="Player")
+	UPROPERTY(EditAnywhere, Category="Player")
 	FIntVector PlayerGridDimensions;
-	UPROPERTY(EditDefaultsOnly, Category="Player")
+	UPROPERTY(EditAnywhere, Category="Player")
 	TSubclassOf<AGrid> PlayerGridBlueprint;
-	UPROPERTY(EditDefaultsOnly, Category="Player")
+	UPROPERTY(EditAnywhere, Category="Player")
 	TSubclassOf<AGridPawn> PlayerBlueprint;
 
 
@@ -61,13 +61,13 @@ protected:
 	AGrid *EnemyGrid;
 	UPROPERTY()
 	TArray<class AGridPawn *> Enemies;
-	UPROPERTY(EditDefaultsOnly, Category="Enemies")
+	UPROPERTY(EditAnywhere, Category="Enemies")
 	TArray<FIntVector> EnemiesGridInitialLocation;
-	UPROPERTY(EditDefaultsOnly, Category="Enemies")
+	UPROPERTY(EditAnywhere, Category="Enemies")
 	FIntVector EnemyGridDimensions;
-	UPROPERTY(EditDefaultsOnly, Category="Enemies")
+	UPROPERTY(EditAnywhere, Category="Enemies")
 	TSubclassOf<AGrid> EnemyGridBlueprint;
-	UPROPERTY(EditDefaultsOnly, Category="Enemies")
+	UPROPERTY(EditAnywhere, Category="Enemies")
 	TArray<TSubclassOf<AGridPawn>> EnemyBlueprint;
 
 private:
