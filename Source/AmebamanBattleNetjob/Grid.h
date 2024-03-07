@@ -11,7 +11,7 @@
 // Should this be a class so UE can manage memory? does it handle structs with pointers properly? I think this will cause memory leaks
 USTRUCT()
 struct FTileData {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
 public:
 	int32 Id;
@@ -90,7 +90,10 @@ protected:
 
 private:
 	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
-	TArray<FTileData *> GridData;
+	// TArray is a managed data type, no need to worry about uproperty
+	// FTileData* though shouldnt be a pointer here, this could cause all sorts of problems. This really 
+	// should only be FTileData -- TODO fix this
+	TArray<FTileData*> GridData;
 	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
-	TMap<FString, FTileData *> GridPawnMap;
+	TMap<FString, FTileData*> GridPawnMap;
 };
