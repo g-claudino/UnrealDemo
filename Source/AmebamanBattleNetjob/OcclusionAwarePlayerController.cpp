@@ -14,19 +14,14 @@ AOcclusionAwarePlayerController::AOcclusionAwarePlayerController(){
     IsOcclusionEnabled = true;
 }
 
-void AOcclusionAwarePlayerController::BeginPlay(){
-    Super::BeginPlay();
+void AOcclusionAwarePlayerController::OnPossess(APawn* pawn){
+    Super::OnPossess(pawn);
 
-    if(!IsValid(GetPawn())) return;
+    if(!IsValid(pawn)) return;
 
-    SpringArmComponent = Cast<USpringArmComponent>(GetPawn()->GetComponentByClass(USpringArmComponent::StaticClass()));
-    CameraComponent = Cast<UCameraComponent>(GetPawn()->GetComponentByClass(UCameraComponent::StaticClass()));
-    CapsuleComponent = Cast<UCapsuleComponent>(GetPawn()->GetComponentByClass(UCapsuleComponent::StaticClass()));
-
-    UE_LOG(LogTemp, Warning, 
-        TEXT("[%s.BeginPlay()] Actor %s was already occluded. Ignoring."), 
-        *this->GetName(), 
-        SpringArmComponent);
+    SpringArmComponent = Cast<USpringArmComponent>(pawn->GetComponentByClass(USpringArmComponent::StaticClass()));
+    CameraComponent = Cast<UCameraComponent>(pawn->GetComponentByClass(UCameraComponent::StaticClass()));
+    CapsuleComponent = Cast<UCapsuleComponent>(pawn->GetComponentByClass(UCapsuleComponent::StaticClass()));
 }
 
 void AOcclusionAwarePlayerController::SyncOccludedActors(){
@@ -45,7 +40,10 @@ void AOcclusionAwarePlayerController::SyncOccludedActors(){
 
     // Only check for static objects
     TArray<TEnumAsByte<EObjectTypeQuery>> collisionObjectTypes;
-    collisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic)); // ECollisionChannel: https://docs.unrealengine.com/4.26/en-US/API/Runtime/Engine/Engine/ECollisionChannel/
+    
+    // ECollisionChannel: https://docs.unrealengine.com/4.26/en-US/API/Runtime/Engine/Engine/ECollisionChannel/
+    collisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic)); 
+    collisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
 
     TArray<AActor*> asctorsToIgnore; // TODO: Add configuration to ignore actor types
     TArray<FHitResult> outHits;
@@ -71,10 +69,10 @@ void AOcclusionAwarePlayerController::SyncOccludedActors(){
     if(bGotHits){
         TSet<const AActor*> actorsJustOccluded;
 
-        for(FHitResult Hit : outHits){
-            const AActor* HitActor = Cast<AActor>(Hit.GetActor());
-            HideOccludedActor(HitActor);
-            actorsJustOccluded.Add(HitActor);
+        for(FHitResult hit : outHits){
+            const AActor* hitActor = Cast<AActor>(hit.GetActor());
+            HideOccludedActor(hitActor);
+            actorsJustOccluded.Add(hitActor);
         }
 
         // Actors that are NOT occluded anymore, show them
@@ -160,16 +158,16 @@ void AOcclusionAwarePlayerController::ShowOccludedActor(FOccludedActorProperties
 }
 
 bool AOcclusionAwarePlayerController::OnHideOccludedActor(const FOccludedActorProperties& occludedActor) const {
-    for(int materialIdx = 0; materialIdx < occludedActor.Materials.Num(); materialIdx++){
-        occludedActor.StaticMesh->SetMaterial(materialIdx, occludedActor.Materials[materialIdx]);
+    for(int i = 0; i < occludedActor.StaticMesh->GetNumMaterials(); i++){
+        occludedActor.StaticMesh->SetMaterial(i, TransparencyMaterial);
     }
 
     return true;
 }
 
 bool AOcclusionAwarePlayerController::OnShowOccludedActor(const FOccludedActorProperties& occludedActor) const {
-    for(int i = 0; i < occludedActor.StaticMesh->GetNumMaterials(); i++){
-        occludedActor.StaticMesh->SetMaterial(i, TransparencyMaterial);
+    for(int materialIdx = 0; materialIdx < occludedActor.Materials.Num(); materialIdx++){
+        occludedActor.StaticMesh->SetMaterial(materialIdx, occludedActor.Materials[materialIdx]);
     }
 
     return true;

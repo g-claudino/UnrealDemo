@@ -9,7 +9,6 @@
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-
 #include "GameFramework/SpringArmComponent.h"
 #include "OcclusionAwarePlayerController.generated.h"
 
@@ -44,7 +43,7 @@ public:
 	void SyncOccludedActors();
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* pawn) override;
 
 	/** How much of the Pawn capsule Radius and Height
 	 * should be used for the Line Trace before considering an Actor occluded?
