@@ -35,17 +35,38 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	FVector location = GetActorLocation();
 	FVector scale = GetActorScale();
 	FRotator rotation = GetActorRotation();
+	AGridTile *tempActor = GetWorld()->SpawnActor<AGridTile>(TileBlueprint);
+
+	// make grid spawn from center of grid
+	// first we need to get a single extension
+	// to do so we create a tempActor so that we do this outside the foor loop logic
+	FVector tileCenter;
+	FVector tileExtent;
+	tempActor->GetActorBounds(false, tileCenter, tileExtent, true);
+
+	// then we get the extent (half of the size) and we multiply by the total grid size in each direction
+	FVector gridSize = FVector(
+		tileExtent.X*Cells.X,
+		tileExtent.Y*Cells.Y,
+		tileExtent.Z*Cells.Z
+	);
+
+	// we clean the temp actor
+	tempActor->Destroy();
+
+	// we generate the origin FVector so that grids will be correctly centered
+	FVector Origin = -gridSize/2;
 
 	for(int x = 0; x < Cells.X; x++){
 		for(int y = 0; y < Cells.Y; y++){
 			for(int z = 0; z < Cells.Z; z++){
-				location = FVector(Offset.X*x, Offset.Y*y, Offset.Z*z);
+				location = FVector(Offset.X*x, Offset.Y*y, Offset.Z*z) + Origin;
 				FTransform const &tileTransform = { rotation, location, scale };
 
 				// engine cannot handle same name for different objects, let it generate the name by itself
 				// params.Name = FName(FString::Printf(TEXT("GridData tile [%d, %d, %d]"), x, y, z));
-				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(TileBlueprint, tileTransform);
-				tileActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+				AGridTile *tileActor = GetWorld()->SpawnActor<AGridTile>(TileBlueprint,tileTransform);
+				tileActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);	
 
 				int gridIndex = FIntVectorToGridArrayIndex(x, y, z);
 				GridData[gridIndex] = new FTileData();
