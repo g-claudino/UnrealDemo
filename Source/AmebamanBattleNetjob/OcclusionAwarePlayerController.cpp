@@ -10,6 +10,7 @@
 
 AOcclusionAwarePlayerController::AOcclusionAwarePlayerController(){
     CapsulePercentageForTrace = 1.0f;
+    ZDisplacement = 0.0f;
     DebugLineTraces = true;
     IsOcclusionEnabled = true;
 }
@@ -35,8 +36,10 @@ void AOcclusionAwarePlayerController::SyncOccludedActors(){
     }
 
     // Raycast line
-    FVector start = CameraComponent->GetComponentLocation();
-    FVector end = GetPawn()->GetActorLocation();
+    FVector start = CameraComponent->GetComponentLocation(); 
+    float scaledCapsuleDisplacement = CapsuleComponent->GetScaledCapsuleHalfHeight() * CapsulePercentageForTrace;
+    float verticalDisplacement = scaledCapsuleDisplacement + ZDisplacement - CapsuleComponent->GetScaledCapsuleHalfHeight();
+    FVector end = GetPawn()->GetActorLocation() + FVector{0.0f, 0.0f, verticalDisplacement};
 
     // Only check for static objects
     TArray<TEnumAsByte<EObjectTypeQuery>> collisionObjectTypes;
@@ -45,7 +48,8 @@ void AOcclusionAwarePlayerController::SyncOccludedActors(){
     collisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic)); 
     collisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
 
-    TArray<AActor*> asctorsToIgnore; // TODO: Add configuration to ignore actor types
+    TArray<AActor*> actorsToIgnore;
+    actorsToIgnore.Add(GetPawn());
     TArray<FHitResult> outHits;
 
     auto shouldDebug = DebugLineTraces ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
@@ -56,10 +60,10 @@ void AOcclusionAwarePlayerController::SyncOccludedActors(){
         start,
         end,
         CapsuleComponent->GetScaledCapsuleRadius() * CapsulePercentageForTrace,
-        CapsuleComponent->GetScaledCapsuleHalfHeight() * CapsulePercentageForTrace,
+        scaledCapsuleDisplacement,
         collisionObjectTypes,
         true, // bool bTraceComplex
-        asctorsToIgnore,
+        actorsToIgnore,
         shouldDebug,
         outHits,
         true // bool bIgnoreSelf

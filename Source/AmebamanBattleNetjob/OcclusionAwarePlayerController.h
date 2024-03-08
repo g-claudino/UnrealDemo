@@ -52,6 +52,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion", meta=(ClampMin="0.1", ClampMax="10"))
 	float CapsulePercentageForTrace;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion", meta=(ClampMin="0", ClampMax="100"))
+	float ZDisplacement;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Materials")
 	UMaterialInterface* TransparencyMaterial;
 	
