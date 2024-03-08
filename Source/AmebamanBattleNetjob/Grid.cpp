@@ -42,7 +42,6 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	// to do so we create a tempActor so that we do this outside the foor loop logic
 	FVector tileCenter;
 	FVector tileExtent;
-	tempActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	tempActor->GetActorBounds(false, tileCenter, tileExtent, true);
 
 	// then we get the extent (half of the size) and we multiply by the total grid size in each direction
