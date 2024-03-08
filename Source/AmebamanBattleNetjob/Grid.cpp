@@ -68,7 +68,10 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 }
 
 void AGrid::PlacePawnInGrid(AGridPawn *pawn, FIntVector gridPosition){
-	ensureMsgf(IsValidPosition(gridPosition), TEXT("Trying to place pawn in invalid grid position"));
+	if(!IsValidPosition(gridPosition)){
+		UE_LOG(LogTemp, Warning, TEXT("[%s.PlacePawnInGrid()] Trying to place pawn in invalid grid position, placing at [0, 0, 0]"), *GetName());
+		gridPosition = FIntVector {0, 0, 0};
+	}
 	
 	int gridIndex = FIntVectorToGridArrayIndex(gridPosition);
 	GridData[gridIndex]->Pawn = pawn;
@@ -185,6 +188,8 @@ bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
 }
 
 int32 AGrid::RemovePawnFromGrid(AGridPawn* pawn){
+	if(!IsValid(pawn)) return;
+	
 	FTileData tileData;
 	if(GetPawnInfo(pawn, tileData)){
 		GridPawnMap.Remove(pawn->GetName());
