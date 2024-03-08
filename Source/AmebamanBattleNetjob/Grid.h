@@ -57,15 +57,19 @@ public:
 	inline FVector GridToWorldLocation(int x, int y, int z);
 
 	UFUNCTION()
+	inline bool IsPawnInGrid(AGridPawn *pawn);
+	UFUNCTION()
 	bool GetPawnInfo(AGridPawn *pawn, FTileData& result);
 	bool GetPawnInfo(FIntVector gridLocation, FTileData& result);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Offset;
-		// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
+
+	// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
 	inline int FIntVectorToGridArrayIndex(int x, int y, int z);
 	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
 	inline FIntVector GridArrayIndexToFIntVector(int idx);
+	int32 RemovePawnFromGrid(AGridPawn* pawn);
 
 protected:
 	// Called when the game starts or when spawned

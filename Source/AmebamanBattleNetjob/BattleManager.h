@@ -10,7 +10,7 @@
 #include "GameFramework/Actor.h"
 #include "BattleManager.generated.h"
 
-// TODO
+// TODO make attack function a delegate to remove pawn dependency on the battle manager
 // typedef void (ABattleManager::*AttackDelegate)(FIntVector target);
 
 
@@ -21,12 +21,21 @@ class AMEBAMANBATTLENETJOB_API ABattleManager : public AActor {
 public:	
 	// Sets default values for this actor's properties
 	ABattleManager();
+	void PlayerAttackCallback(FIntVector target_offset, int damage);
+	void EnemyAttackCallback(FIntVector target_offset, int damage);
+	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
+	UFUNCTION(BlueprintCallable)
+	void RemovePawnFromGrid(AGridPawn* pawn);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintCallable)
 	void SetupBattle();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBattleWon();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBattleLost();
 	
 	UPROPERTY(EditAnywhere)
 	FVector gridTilesOffset = FVector{110, 110, 1100};
@@ -64,9 +73,4 @@ protected:
 private:
 	void SpawnPlayer(UWorld *world, const FTransform &transform);
 	void SpawnEnemies(UWorld *world, const FTransform &transform);
-
-public:
-	void PlayerAttackCallback(FIntVector target_offset, int damage);
-	void EnemyAttackCallback(FIntVector target_offset, int damage);
-	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
 };

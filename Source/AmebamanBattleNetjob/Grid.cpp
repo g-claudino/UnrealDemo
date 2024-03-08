@@ -160,6 +160,10 @@ inline FIntVector AGrid::GridArrayIndexToFIntVector(int idx) {
     return FIntVector(x, y, z);
 }
 
+inline bool AGrid::IsPawnInGrid(AGridPawn *pawn){
+	return GridPawnMap.Find(pawn->GetName()) != nullptr;
+}
+
 bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) { 
 	FTileData* data = GridPawnMap[pawn->GetName()];
 	if (data == nullptr){
@@ -168,7 +172,6 @@ bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) {
 
 	result = *data;
 	return true;
-
 }
 
 bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
@@ -179,4 +182,14 @@ bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
 
 	result = *data;
 	return true;
+}
+
+int32 AGrid::RemovePawnFromGrid(AGridPawn* pawn){
+	FTileData tileData;
+	if(GetPawnInfo(pawn, tileData)){
+		GridPawnMap.Remove(pawn->GetName());
+		GridData[tileData.Id]->Pawn = nullptr;
+	}
+
+	return GridPawnMap.Num();
 }

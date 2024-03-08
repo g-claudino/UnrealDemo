@@ -28,16 +28,27 @@ public:
 	float GetCollisionHalfHeight();
 
 	UFUNCTION(BlueprintCallable)
-	void Damage(int32 damage);
+	void DamagePawn(int32 damage);
 
 protected:
+	UPROPERTY(BluePrintReadOnly)
+	int32 CurrentHealth;
+	UPROPERTY(EditDefaultsOnly, BluePrintReadOnly)
+	int32 MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	AGrid *Grid;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ABattleManager *BattleManager;
 
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDamageTaken(int32 damage, int32 health);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPawnKilled();
 
 	UFUNCTION(BlueprintCallable)
 	void Attack(FIntVector target);
@@ -45,10 +56,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	float Smoothstep(float t);
 	
-	UPROPERTY(BluePrintReadOnly)
-	int32 HP;
-	UPROPERTY(EditAnywhere, BluePrintReadOnly)
-	int32 MaxHP;
 private:
 	UPROPERTY()
 	UCapsuleComponent *CapsuleCollision;

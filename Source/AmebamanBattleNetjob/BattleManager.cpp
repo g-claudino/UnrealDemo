@@ -30,7 +30,7 @@ void ABattleManager::SetupBattle(){
 
 	SpawnPlayer(world, playerTransform);
 	SpawnEnemies(world, enemyTransform);
-}
+} 
 
 void ABattleManager::SpawnPlayer(UWorld *world, const FTransform &transform){
 	PlayerGrid = world->SpawnActor<AGrid>(PlayerGridBlueprint, transform);
@@ -50,9 +50,8 @@ void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
 	EnemyGrid->Offset = gridTilesOffset;
 	EnemyGrid->GenerateGrid(EnemyGridDimensions);
 
-	Enemies.Init(nullptr, EnemyBlueprint.Num());
 	for(int i = 0; i < EnemyBlueprint.Num(); i++){
-		Enemies[i] = world->SpawnActor<AGridPawn>(EnemyBlueprint[i]);
+		Enemies.Add(world->SpawnActor<AGridPawn>(EnemyBlueprint[i]));
 		Enemies[i]->Setup(EnemyGrid, this);
 		EnemyGrid->PlacePawnInGrid(Enemies[i], EnemiesGridInitialLocation[i]);
 
@@ -72,7 +71,6 @@ void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){
 		FIntVector target = playerLocationVec+target_offset;
 		ExecuteAttackOnGrid(EnemyGrid, target, damage);
 	}
-	
 }
 
 void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
@@ -80,13 +78,23 @@ void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
 }
 
 void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage){
-	
 	FTileData gridData;
 	if (grid->GetPawnInfo(target, gridData)){
 		AGridPawn* gridPawnInLocation = gridData.Pawn;
 		if (gridPawnInLocation != nullptr){
-			gridPawnInLocation -> Damage(damage);		
+			gridPawnInLocation -> DamagePawn(damage);
 		}
 	}
 }
 
+void ABattleManager::RemovePawnFromGrid(AGridPawn* pawn){
+	if(EnemyGrid->IsPawnInGrid(pawn)){
+		if(EnemyGrid->RemovePawnFromGrid(pawn) <= 0){
+			OnBattleWon();
+		}
+	} else {
+		// No need to do anything with the grid here since we only have 1 player only, 
+		// we just go to the game over flow
+		OnBattleLost();
+	}
+}
