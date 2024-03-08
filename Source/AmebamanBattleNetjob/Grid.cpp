@@ -116,7 +116,7 @@ inline bool AGrid::IsGridLocationEmpty(FIntVector location){
 }
 
 
-bool AGrid::CalculateTargetGridPosition(AGridPawn *pawn, FIntVector direction, int32 scale, FIntVector &result){
+bool AGrid::CalculateTargetGridPosition(const AGridPawn *pawn, FIntVector direction, int32 scale, FIntVector &result){
 	FIntVector currentLocation = GridArrayIndexToFIntVector(GridPawnMap[pawn->GetName()].Id);
 	return CalculateTargetGridPosition(currentLocation, direction, scale, result);
 }
@@ -162,7 +162,7 @@ inline FIntVector AGrid::GridArrayIndexToFIntVector(int idx) {
     return FIntVector(x, y, z);
 }
 
-inline bool AGrid::IsPawnInGrid(AGridPawn *pawn){
+inline bool AGrid::IsPawnInGrid(const AGridPawn *pawn){
 	return GridPawnMap.Find(pawn->GetName()) != nullptr;
 }
 
@@ -186,7 +186,7 @@ bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
 	return true;
 }
 
-int32 AGrid::RemovePawnFromGrid(AGridPawn* pawn){
+int32 AGrid::RemovePawnFromGrid(AGridPawn *pawn){
 	if(!IsValid(pawn)) {
 		UE_LOG(LogTemp, Warning, TEXT("[%s.RemovePawnFromGrid()] Trying to remove invalid pawn from grid, ignoring (did you call Destroy on this pawn before this?)"), *GetName());
 		return GridPawnMap.Num();
