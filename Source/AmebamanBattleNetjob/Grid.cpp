@@ -48,19 +48,18 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 				tileActor->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 
 				int gridIndex = FIntVectorToGridArrayIndex(x, y, z);
-				GridData[gridIndex] = new FTileData();
-				GridData[gridIndex]->Id = gridIndex;
-				GridData[gridIndex]->Tile = tileActor;
-				GridData[gridIndex]->Pawn = nullptr;
+				GridData[gridIndex].Id = gridIndex;
+				GridData[gridIndex].Tile = tileActor;
+				GridData[gridIndex].Pawn = nullptr;
 				// UE_LOG(
 				// 	LogTemp, 
 				// 	Display, 
 				// 	TEXT("[%s.GenerateGrid()] GridData[%d,%d,%d]: { .Id: %d .Tile: %p, .Pawn: %p }"), 
 				// 		*this->GetName(), 
 				// 		x, y, z,
-				// 		GridData[gridIndex]->Id,
-				// 		GridData[gridIndex]->Tile,
-				// 		GridData[gridIndex]->Pawn
+				// 		GridData[gridIndex].Id,
+				// 		GridData[gridIndex].Tile,
+				// 		GridData[gridIndex].Pawn
 				// );
 			}
 		}
@@ -74,7 +73,7 @@ void AGrid::PlacePawnInGrid(AGridPawn *pawn, FIntVector gridPosition){
 	}
 	
 	int gridIndex = FIntVectorToGridArrayIndex(gridPosition);
-	GridData[gridIndex]->Pawn = pawn;
+	GridData[gridIndex].Pawn = pawn;
 
 	FVector location = GridToWorldLocation(gridPosition);
 	float halfHeight = pawn->GetCollisionHalfHeight();
@@ -91,9 +90,9 @@ inline FIntVector AGrid::WorldToGridLocation(FVector location) {
 
 inline FVector AGrid::GridToWorldLocation(int x, int y, int z) {
 	int gridIndex = FIntVectorToGridArrayIndex(x, y, z);
-	auto cell = GridData[gridIndex]->Tile;
+	auto cell = GridData[gridIndex].Tile;
 	float halfHeight = cell->GetSimpleCollisionHalfHeight();
-	FVector cellLocation = GridData[gridIndex]->Tile->GetActorLocation();
+	FVector cellLocation = GridData[gridIndex].Tile->GetActorLocation();
 	cellLocation.Y += halfHeight + this->GetSimpleCollisionHalfHeight();
 	return cellLocation; 
 }
@@ -113,12 +112,12 @@ inline bool AGrid::IsLocationInBounds(FIntVector location){
 }
 
 inline bool AGrid::IsGridLocationEmpty(FIntVector location){
-	return GridData[FIntVectorToGridArrayIndex(location)]->Pawn == nullptr;
+	return GridData[FIntVectorToGridArrayIndex(location)].Pawn == nullptr;
 }
 
 
 bool AGrid::CalculateTargetGridPosition(AGridPawn *pawn, FIntVector direction, int32 scale, FIntVector &result){
-	FIntVector currentLocation = GridArrayIndexToFIntVector(GridPawnMap[pawn->GetName()]->Id);
+	FIntVector currentLocation = GridArrayIndexToFIntVector(GridPawnMap[pawn->GetName()].Id);
 	return CalculateTargetGridPosition(currentLocation, direction, scale, result);
 }
 
@@ -135,8 +134,8 @@ bool AGrid::CalculateTargetGridPosition(FIntVector currentLocation, FIntVector d
 
 // This method doesn't physically move the pawn in the engine, just update it's current grid coordinates
 void AGrid::MovePawnInGrid(AGridPawn *pawn, FIntVector newLocation){
-	GridData[GridPawnMap[pawn->GetName()]->Id]->Pawn = nullptr;
-	GridData[FIntVectorToGridArrayIndex(newLocation)]->Pawn = pawn;
+	GridData[GridPawnMap[pawn->GetName()].Id].Pawn = nullptr;
+	GridData[FIntVectorToGridArrayIndex(newLocation)].Pawn = pawn;
 	GridPawnMap[pawn->GetName()] = GridData[FIntVectorToGridArrayIndex(newLocation)];
 }
 
@@ -168,7 +167,7 @@ inline bool AGrid::IsPawnInGrid(AGridPawn *pawn){
 }
 
 bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) { 
-	FTileData* data = GridPawnMap[pawn->GetName()];
+	FTileData* data = GridPawnMap.Find(pawn->GetName());
 	if (data == nullptr){
 		return false;
 	}
@@ -178,22 +177,25 @@ bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) {
 }
 
 bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
-	FTileData* data = GridData[FIntVectorToGridArrayIndex(gridLocation)];
-	if (data == nullptr){
+	FTileData data = GridData[FIntVectorToGridArrayIndex(gridLocation)];
+	if (!IsValid(data.Pawn)){
 		return false;
 	}
 
-	result = *data;
+	result = data;
 	return true;
 }
 
 int32 AGrid::RemovePawnFromGrid(AGridPawn* pawn){
-	if(!IsValid(pawn)) return;
-	
+	if(!IsValid(pawn)) {
+		UE_LOG(LogTemp, Warning, TEXT("[%s.RemovePawnFromGrid()] Trying to remove invalid pawn from grid, ignoring (did you call Destroy on this pawn before this?)"), *GetName());
+		return GridPawnMap.Num();
+	}
+
 	FTileData tileData;
 	if(GetPawnInfo(pawn, tileData)){
 		GridPawnMap.Remove(pawn->GetName());
-		GridData[tileData.Id]->Pawn = nullptr;
+		GridData[tileData.Id].Pawn = nullptr;
 	}
 
 	return GridPawnMap.Num();

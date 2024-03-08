@@ -89,8 +89,6 @@ protected:
 	inline bool IsGridLocationEmpty(FIntVector location);
 
 private:
-	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
-	TArray<FTileData *> GridData;
-	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
-	TMap<FString, FTileData *> GridPawnMap;
+	TArray<FTileData> GridData;
+	TMap<FString, FTileData> GridPawnMap;
 };
