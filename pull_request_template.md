@@ -1,7 +1,8 @@
 # Description
-
 *Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change.*
 
+## Consequences
+*List all consequences, both negative and positive, this changes makes and other features that could be affected by these changes.*
 
 ## Fixes # (issue)
 

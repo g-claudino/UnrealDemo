@@ -40,7 +40,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	inline FIntVector WorldToGridLocation(FVector location);
 	UFUNCTION(BlueprintCallable)
-	bool CalculateTargetGridPosition(AGridPawn *pawn, FIntVector direction, int32 scale, FIntVector &result);
+	bool CalculateTargetGridPosition(const AGridPawn *pawn, FIntVector direction, int32 scale, FIntVector &result);
 	bool CalculateTargetGridPosition(FIntVector currentLocation, FIntVector direction, int32 scale, FIntVector &result);
 	UFUNCTION(BlueprintCallable)
 	void MovePawnInGrid(AGridPawn *pawn, FIntVector newLocation);
@@ -57,7 +57,7 @@ public:
 	inline FVector GridToWorldLocation(int x, int y, int z);
 
 	UFUNCTION()
-	inline bool IsPawnInGrid(AGridPawn *pawn);
+	inline bool IsPawnInGrid(const AGridPawn *pawn);
 	UFUNCTION()
 	bool GetPawnInfo(AGridPawn *pawn, FTileData& result);
 	bool GetPawnInfo(FIntVector gridLocation, FTileData& result);
@@ -69,7 +69,7 @@ public:
 	inline int FIntVectorToGridArrayIndex(int x, int y, int z);
 	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
 	inline FIntVector GridArrayIndexToFIntVector(int idx);
-	int32 RemovePawnFromGrid(AGridPawn* pawn);
+	int32 RemovePawnFromGrid(AGridPawn *pawn);
 
 protected:
 	// Called when the game starts or when spawned
@@ -89,11 +89,6 @@ protected:
 	inline bool IsGridLocationEmpty(FIntVector location);
 
 private:
-	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
-	// TArray is a managed data type, no need to worry about uproperty
-	// FTileData* though shouldnt be a pointer here, this could cause all sorts of problems. This really 
-	// should only be FTileData -- TODO fix this
-	TArray<FTileData*> GridData;
-	//UPROPERTY() --> WE NEED THIS TO WORK TO NOT HAVE MEMORY LEAK. HOWEVER IT WILL NOT WORK WITH THE POINTER AS IT IS TODAY
-	TMap<FString, FTileData*> GridPawnMap;
+	TArray<FTileData> GridData;
+	TMap<FString, FTileData> GridPawnMap;
 };
