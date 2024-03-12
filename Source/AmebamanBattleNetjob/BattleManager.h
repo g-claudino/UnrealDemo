@@ -21,9 +21,15 @@ class AMEBAMANBATTLENETJOB_API ABattleManager : public AActor {
 public:	
 	// Sets default values for this actor's properties
 	ABattleManager();
-	void PlayerAttackCallback(FIntVector target_offset, int damage);
-	void EnemyAttackCallback(FIntVector target_offset, int damage);
-	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
+
+	void PlayerAttackCallback(FIntVector targetOffset, int damage);
+	void EnemyAttackCallback(FIntVector targetOffset, int damage);
+	void ExecuteAttackOnGrid(AGrid* grid, const FTileData& tileData, FIntVector target, int damage);
+	
+	void PlayerPreviewAttackDangerArea(FIntVector targetOffset);
+	void EnemyPreviewAttackDangerArea(FIntVector targetOffset);
+	void ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target);
+
 	UFUNCTION(BlueprintCallable)
 	void RemovePawnFromGrid(AGridPawn* pawn);
 
@@ -39,6 +45,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	FVector gridTilesOffset = FVector{110, 110, 1100};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UMaterial* DangerAreaHighlightMaterial;
 
 
 	// Player properties

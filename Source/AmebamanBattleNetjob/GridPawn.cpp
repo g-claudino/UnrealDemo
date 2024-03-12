@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Components/CapsuleComponent.h" 
+#include "GridPawn.h"
 #include "Grid.h"
 #include "BattleManager.h"
-#include "GridPawn.h"
+#include "Components/CapsuleComponent.h" 
 
 // Sets default values
 AGridPawn::AGridPawn() {
@@ -35,7 +35,8 @@ void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void AGridPawn::Attack(FIntVector target){
+// TODO need to setup callback for this so we dont need to keep track which pawn this is, if its player or the enemy
+void AGridPawn::Attack(const FIntVector target){
 	// TODO need to provide a damage source for this hardcoded value
 	BattleManager->PlayerAttackCallback(target, 1); 
 }
@@ -48,6 +49,12 @@ void AGridPawn::DamagePawn(int32 damage){
 		OnDamageTaken(damage, CurrentHealth);
 	}
 }
+
+// TODO need to setup callback for this so we dont need to keep track which pawn this is, if its player or the enemy
+void AGridPawn::PreviewAttackDangerArea(const FIntVector target){
+	BattleManager->PlayerPreviewAttackDangerArea(target);
+}
+
 
 
 inline float AGridPawn::Smoothstep(float t){

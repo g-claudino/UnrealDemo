@@ -126,6 +126,10 @@ inline bool AGrid::IsValidPosition(FIntVector location){
 	return IsLocationInBounds(location) && IsGridLocationEmpty(location);
 }
 
+inline bool AGrid::IsIndexInBounds(int32 index){
+	return index < Cells.X*Cells.Y*Cells.Z;
+}
+
 inline bool AGrid::IsLocationInBounds(FIntVector location){
 	return  location.X >= 0 && location.X < Cells.X &&
 			location.Y >= 0 && location.Y < Cells.Y &&
@@ -198,14 +202,19 @@ bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) {
 }
 
 bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
-	FTileData data = GridData[FIntVectorToGridArrayIndex(gridLocation)];
-	if (!IsValid(data.Pawn)){
+	return GetPawnInfo(FIntVectorToGridArrayIndex(gridLocation), result);
+}
+
+bool AGrid::GetPawnInfo(int32 gridIndex, FTileData& result){
+	if(!IsIndexInBounds(gridIndex)){
+		UE_LOG(LogTemp, Error, TEXT("[%s.GetPawnInfo()] Trying to access invalid position '%d' in grid!"), gridIndex);
 		return false;
 	}
 
-	result = data;
+	result = GridData[gridIndex];
 	return true;
 }
+
 
 int32 AGrid::RemovePawnFromGrid(AGridPawn *pawn){
 	if(!IsValid(pawn)) {

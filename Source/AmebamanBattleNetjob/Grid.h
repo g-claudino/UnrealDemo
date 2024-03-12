@@ -61,6 +61,7 @@ public:
 	UFUNCTION()
 	bool GetPawnInfo(AGridPawn *pawn, FTileData& result);
 	bool GetPawnInfo(FIntVector gridLocation, FTileData& result);
+	bool GetPawnInfo(int32 gridIndex, FTileData& result);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector Offset;
@@ -85,6 +86,8 @@ protected:
 	inline bool IsValidPosition(FIntVector location);
 	UFUNCTION(BlueprintCallable)
 	inline bool IsLocationInBounds(FIntVector location);
+	UFUNCTION(BlueprintCallable)
+	inline bool IsIndexInBounds(int32 index);
 	UFUNCTION(BlueprintCallable)
 	inline bool IsGridLocationEmpty(FIntVector location);
 

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Kismet/GameplayStatics.h" 
 #include "BattleManager.h"
+#include "Kismet/GameplayStatics.h" 
 
 
 // Sets default values
@@ -63,29 +63,54 @@ void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
 
 
 
-void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){
+void ABattleManager::PlayerAttackCallback(FIntVector targetOffset, int damage){
 	FTileData tileData;
-	if (PlayerGrid->GetPawnInfo(Player, tileData)){
-		int playerLocationID = tileData.Id;
-		FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationID);
-		FIntVector target = playerLocationVec+target_offset;
-		ExecuteAttackOnGrid(EnemyGrid, target, damage);
+	if (!PlayerGrid->GetPawnInfo(Player, tileData)) return;
+
+	int playerLocationId = tileData.Id;
+	FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationId);
+	FIntVector target = playerLocationVec + targetOffset;
+	ExecuteAttackOnGrid(EnemyGrid, tileData, target, damage);
+}
+
+void ABattleManager::EnemyAttackCallback(FIntVector targetOffset, int damage){
+	FTileData tileData;
+	ExecuteAttackOnGrid(PlayerGrid, tileData, targetOffset, damage);
+}
+
+void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, const FTileData& tileData, FIntVector target, int damage){
+	AGridPawn* targetPawn = tileData.Pawn;
+	if(IsValid(targetPawn)){
+		targetPawn->DamagePawn(damage);
 	}
 }
 
-void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
-	ExecuteAttackOnGrid(PlayerGrid, target_offset, damage);
-}
 
-void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage){
-	FTileData gridData;
-	if (grid->GetPawnInfo(target, gridData)){
-		AGridPawn* gridPawnInLocation = gridData.Pawn;
-		if (IsValid(gridPawnInLocation)){
-			gridPawnInLocation->DamagePawn(damage);
-		}
+void ABattleManager::PlayerPreviewAttackDangerArea(FIntVector targetOffset){
+	FTileData playerTileData;
+	if (!PlayerGrid->GetPawnInfo(Player, playerTileData)) return;
+
+	int playerLocationId = playerTileData.Id;
+	FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationId);
+	FIntVector target = playerLocationVec + targetOffset;
+
+	FTileData enemyTileData; 
+	if(EnemyGrid->GetPawnInfo(target, enemyTileData)){
+		ExecutePreviewAttackDangerArea(EnemyGrid, enemyTileData, target);
 	}
 }
+
+void ABattleManager::EnemyPreviewAttackDangerArea(const FIntVector targetOffset){
+	const FTileData tileData = {};
+	ExecutePreviewAttackDangerArea(PlayerGrid, tileData, targetOffset);
+}
+
+void ABattleManager::ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target){
+	UStaticMeshComponent* staticMesh = Cast<UStaticMeshComponent>(tileData.Tile->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	// materialsTable.Add() staticMesh->GetMaterial()
+	staticMesh->SetMaterial(0, DangerAreaHighlightMaterial);
+}
+
 
 void ABattleManager::RemovePawnFromGrid(AGridPawn* pawn){
 	if(EnemyGrid->IsPawnInGrid(pawn)){

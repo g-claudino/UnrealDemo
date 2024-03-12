@@ -46,12 +46,12 @@ protected:
 
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnDamageTaken(int32 damage, int32 health);
+	void OnDamageTaken(const int32 damage, const int32 health);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPawnKilled();
 
 	UFUNCTION(BlueprintCallable)
-	void Attack(FIntVector target);
+	void Attack(const FIntVector target);
 
 	UFUNCTION(BlueprintCallable)
 	float Smoothstep(float t);
@@ -59,4 +59,7 @@ protected:
 private:
 	UPROPERTY()
 	UCapsuleComponent *CapsuleCollision;
+
+	UFUNCTION(BlueprintCallable)
+	void PreviewAttackDangerArea(const FIntVector target);
 };
