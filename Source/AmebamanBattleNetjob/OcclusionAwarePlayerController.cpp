@@ -81,7 +81,7 @@ void AOcclusionAwarePlayerController::SyncOccludedActors(){
 
         // Actors that are NOT occluded anymore, show them
         for(auto& item : OccludedActors){
-            FOccludedActorProperties properties = item.Value;
+            FOccludedActorProperties& properties = item.Value;
 
             // Go through our list of already occluded actors and if any of them is not on the actorsJustOccluded 
             // and was being occluded, show them
@@ -104,22 +104,25 @@ void AOcclusionAwarePlayerController::SyncOccludedActors(){
 }
 
 bool AOcclusionAwarePlayerController::HideOccludedActor(const AActor* actor){
-    FOccludedActorProperties *existingOccludedActor = OccludedActors.Find(actor);
+    FOccludedActorProperties *cachedActor = OccludedActors.Find(actor);
 
-    if(existingOccludedActor && existingOccludedActor->IsOccluded){
+    if(cachedActor && cachedActor->IsOccluded){
+        FString ttrue = "true";
+        FString ffalse = "false";
         if (DebugLineTraces) {
             UE_LOG(LogTemp, Warning, 
-                TEXT("[%s.HideOccludedActor()] Actor %s was already occluded. Ignoring."), 
+                TEXT("[%s.HideOccludedActor()] Actor %s was already occluded. Ignoring. [cachedActor->IsOccluded: %s]"), 
                 *this->GetName(), 
-                *actor->GetName());
+                *actor->GetName(),
+                cachedActor->IsOccluded ? *ttrue : *ffalse);
         }
         return false;
     }
 
-
-    if(existingOccludedActor && IsValid(existingOccludedActor->Actor)){
-        existingOccludedActor->IsOccluded = true;
-        OnHideOccludedActor(*existingOccludedActor);
+    // Actor is cached and is still a valid actor in level - aka it was occluded at least once before
+    if(cachedActor && IsValid(cachedActor->Actor)){
+        cachedActor->IsOccluded = true;
+        OnHideOccludedActor(*cachedActor);
 
         if (DebugLineTraces) {
             UE_LOG(LogTemp, Warning, 
@@ -156,7 +159,10 @@ void AOcclusionAwarePlayerController::ShowOccludedActor(FOccludedActorProperties
     if(!IsValid(occludedActor.Actor)){
         OccludedActors.Remove(occludedActor.Actor);
     }
-
+    UE_LOG(LogTemp, Warning, 
+        TEXT("[%s.ShowOccludedActor()] Showing actor %s."), 
+        *this->GetName(), 
+        *occludedActor.Actor->GetName());
     occludedActor.IsOccluded = false;
     OnShowOccludedActor(occludedActor);
 }
@@ -179,7 +185,7 @@ bool AOcclusionAwarePlayerController::OnShowOccludedActor(const FOccludedActorPr
 
 void AOcclusionAwarePlayerController::ForceShowOccludedActors(){
     for(auto& item : OccludedActors){
-        FOccludedActorProperties properties = item.Value;
+        FOccludedActorProperties& properties = item.Value;
 
         if(properties.IsOccluded){
             ShowOccludedActor(properties);
