@@ -11,7 +11,7 @@
 // Should this be a class so UE can manage memory? does it handle structs with pointers properly? I think this will cause memory leaks
 USTRUCT()
 struct FTileData {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
 public:
 	int32 Id;
