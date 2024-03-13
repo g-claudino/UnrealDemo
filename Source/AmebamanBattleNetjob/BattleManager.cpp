@@ -52,20 +52,18 @@ void ABattleManager::SpawnPlayerActor(UWorld *world){
 void ABattleManager::SpawnEnemyGrid(UWorld *world, const FTransform &transform){
 	// Move enemy grid according to Player Grid Size and Center
 	FVector PlayerGridSize = PlayerGrid->GetGridSize();
-	FVector PlayerGridCenter = PlayerGrid->GetGridCenter();
-	FVector PlayerGridOffset = {0, PlayerGridSize.Y+PlayerGridCenter.Y+GridOffset.Y, 0};
+	FVector PlayerGridReferenceSize = {0, PlayerGridSize.Y+OffsetBetweenGrids.Y, 0};
 
 	// Generate Enemy Grid
 	EnemyGrid = world->SpawnActor<AGrid>(EnemyGridBlueprint);
 	EnemyGrid->Offset = GridTilesOffset;
 	EnemyGrid->GenerateGrid(EnemyGridDimensions);
 	FVector EnemyGridSize = EnemyGrid->GetGridSize();
-	FVector EnemyGridCenter = EnemyGrid->GetGridCenter();
-	FVector TotalOffset = {0,PlayerGridOffset.Y+EnemyGridSize.Y,0};
+	FVector EnemyGridLocation = {0,PlayerGridReferenceSize.Y+EnemyGridSize.Y,0};
 	
 	// Update Transform
 	FTransform RelocateTransform = transform;
-	RelocateTransform.SetTranslation(TotalOffset);
+	RelocateTransform.SetTranslation(EnemyGridLocation);
 	EnemyGrid->SetActorTransform(RelocateTransform);
 }
 

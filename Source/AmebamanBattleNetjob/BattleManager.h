@@ -40,7 +40,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FVector GridTilesOffset = FVector{110, 110, 1100};
 	UPROPERTY(EditAnywhere)
-	FVector GridOffset = FVector{0,10,0};
+	FVector OffsetBetweenGrids = FVector{0,10,0};
 
 	// Player properties
 	UPROPERTY()

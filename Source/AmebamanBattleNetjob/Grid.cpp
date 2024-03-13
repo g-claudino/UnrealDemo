@@ -52,8 +52,10 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 	);
 
 	// To export the total grid size we need to add the size between each tile inside the grid
-	FVector tileNewOffset = Offset - TileBaseSize;
-	FVector gridOffsetSize = FVector(tileNewOffset.X*(Cells.X-1)/2.0, tileNewOffset.Y*(Cells.Y-1)/2.0, tileNewOffset.Z*(Cells.Z-1)/2.0);
+	FVector offsetBetweenTiles = Offset - TileBaseSize;
+	FVector gridOffsetSize = FVector(offsetBetweenTiles.X*(Cells.X-1)/2.0,
+									 offsetBetweenTiles.Y*(Cells.Y-1)/2.0, 
+									 offsetBetweenTiles.Z*(Cells.Z-1)/2.0);
 	GridSize = gridSize+gridOffsetSize;
 	GridCenter = tileCenter;
 
