@@ -24,7 +24,7 @@ void ABattleManager::SetupBattle(){
 	};
 	const FTransform &enemyTransform = {
 		{0, 0, 0}, 
-		{0, 430, 0}, 
+		{0, 0, 0}, 
 		{1, 1, 1} 
 	};
 
@@ -34,7 +34,7 @@ void ABattleManager::SetupBattle(){
 
 void ABattleManager::SpawnPlayer(UWorld *world, const FTransform &transform){
 	PlayerGrid = world->SpawnActor<AGrid>(PlayerGridBlueprint, transform);
-	PlayerGrid->Offset = gridTilesOffset;
+	PlayerGrid->Offset = GridTilesOffset;
 	PlayerGrid->GenerateGrid(PlayerGridDimensions);
 
 	Player = world->SpawnActor<AGridPawn>(PlayerBlueprint);
@@ -46,9 +46,23 @@ void ABattleManager::SpawnPlayer(UWorld *world, const FTransform &transform){
 }
  
 void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
-	EnemyGrid = world->SpawnActor<AGrid>(EnemyGridBlueprint, transform);
-	EnemyGrid->Offset = gridTilesOffset;
+	// Move enemy grid according to Player Grid Size and Center
+	FVector PlayerGridSize = PlayerGrid->GetGridSize();
+	FVector PlayerGridCenter = PlayerGrid->GetGridCenter();
+	FVector PlayerGridOffset = {0, PlayerGridSize.Y+PlayerGridCenter.Y+GridOffset.Y, 0};
+
+	// Generate Enemy Grid
+	EnemyGrid = world->SpawnActor<AGrid>(EnemyGridBlueprint);
+	EnemyGrid->Offset = GridTilesOffset;
 	EnemyGrid->GenerateGrid(EnemyGridDimensions);
+	FVector EnemyGridSize = EnemyGrid->GetGridSize();
+	FVector EnemyGridCenter = EnemyGrid->GetGridCenter();
+	FVector TotalOffset = {0,PlayerGridOffset.Y+EnemyGridSize.Y,0};
+	
+	// Update Transform
+	FTransform RelocateTransform = transform;
+	RelocateTransform.SetTranslation(TotalOffset);
+	EnemyGrid->SetActorTransform(RelocateTransform);
 
 	for(int i = 0; i < EnemyBlueprint.Num(); i++){
 		Enemies.Add(world->SpawnActor<AGridPawn>(EnemyBlueprint[i]));
