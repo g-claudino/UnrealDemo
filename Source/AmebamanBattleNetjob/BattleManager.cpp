@@ -28,15 +28,19 @@ void ABattleManager::SetupBattle(){
 		{1, 1, 1} 
 	};
 
-	SpawnPlayer(world, playerTransform);
-	SpawnEnemies(world, enemyTransform);
+	SpawnPlayerGrid(world, playerTransform);
+	SpawnPlayerActor(world);
+	SpawnEnemyGrid(world, enemyTransform);
+	SpawnEnemiesActors(world);
 } 
 
-void ABattleManager::SpawnPlayer(UWorld *world, const FTransform &transform){
+void ABattleManager::SpawnPlayerGrid(UWorld *world, const FTransform &transform){
 	PlayerGrid = world->SpawnActor<AGrid>(PlayerGridBlueprint, transform);
 	PlayerGrid->Offset = GridTilesOffset;
 	PlayerGrid->GenerateGrid(PlayerGridDimensions);
+}
 
+void ABattleManager::SpawnPlayerActor(UWorld *world){
 	Player = world->SpawnActor<AGridPawn>(PlayerBlueprint);
 	Player->Setup(PlayerGrid, this);
 	PlayerGrid->PlacePawnInGrid(Player, PlayerGridInitialLocation);
@@ -45,7 +49,7 @@ void ABattleManager::SpawnPlayer(UWorld *world, const FTransform &transform){
 	controller->Possess(Player);
 }
  
-void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
+void ABattleManager::SpawnEnemyGrid(UWorld *world, const FTransform &transform){
 	// Move enemy grid according to Player Grid Size and Center
 	FVector PlayerGridSize = PlayerGrid->GetGridSize();
 	FVector PlayerGridCenter = PlayerGrid->GetGridCenter();
@@ -63,8 +67,10 @@ void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
 	FTransform RelocateTransform = transform;
 	RelocateTransform.SetTranslation(TotalOffset);
 	EnemyGrid->SetActorTransform(RelocateTransform);
+}
 
-	for(int i = 0; i < EnemyBlueprint.Num(); i++){
+void ABattleManager::SpawnEnemiesActors(UWorld *world){
+		for(int i = 0; i < EnemyBlueprint.Num(); i++){
 		Enemies.Add(world->SpawnActor<AGridPawn>(EnemyBlueprint[i]));
 		Enemies[i]->Setup(EnemyGrid, this);
 		EnemyGrid->PlacePawnInGrid(Enemies[i], EnemiesGridInitialLocation[i]);
@@ -74,7 +80,6 @@ void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
 		// controller->Possess(enemy);
 	}
 }
-
 
 
 void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){

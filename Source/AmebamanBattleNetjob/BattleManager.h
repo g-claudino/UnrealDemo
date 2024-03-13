@@ -72,6 +72,8 @@ protected:
 	TArray<TSubclassOf<AGridPawn>> EnemyBlueprint;
 
 private:
-	void SpawnPlayer(UWorld *world, const FTransform &transform);
-	void SpawnEnemies(UWorld *world, const FTransform &transform);
+	void SpawnPlayerGrid(UWorld *world, const FTransform &transform);
+	void SpawnEnemyGrid(UWorld *world, const FTransform &transform);
+	void SpawnPlayerActor(UWorld *world);
+	void SpawnEnemiesActors(UWorld *world);
 };
