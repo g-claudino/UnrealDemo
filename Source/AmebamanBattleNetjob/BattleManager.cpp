@@ -68,7 +68,7 @@ void ABattleManager::SpawnEnemyGrid(UWorld *world, const FTransform &transform){
 }
 
 void ABattleManager::SpawnEnemiesActors(UWorld *world){
-		for(int i = 0; i < EnemyBlueprint.Num(); i++){
+	for(int i = 0; i < EnemyBlueprint.Num(); i++){
 		Enemies.Add(world->SpawnActor<AGridPawn>(EnemyBlueprint[i]));
 		Enemies[i]->Setup(EnemyGrid, this);
 		EnemyGrid->PlacePawnInGrid(Enemies[i], EnemiesGridInitialLocation[i]);
