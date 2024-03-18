@@ -24,12 +24,6 @@ void AGridPawn::Setup(AGrid *grid, ABattleManager *battleManager){
 	BattleManager = battleManager;
 }
 
-
-inline float AGridPawn::GetCollisionHalfHeight(){
-	return CapsuleCollision->GetScaledCapsuleHalfHeight();
-}
-
-
 // Called to bind functionality to input
 void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -54,14 +48,4 @@ void AGridPawn::DamagePawn(int32 damage){
 void AGridPawn::PreviewAttackDangerArea(const FIntVector target){
 	BattleManager->PlayerPreviewAttackDangerArea(target);
 }
-
-
-
-inline float AGridPawn::Smoothstep(float t){
-	float t3 = t*t*t;
-	float t4 = t3*t;
-	float t5 = t4*t;
-	return 6*t5 - 15*t4 + 10*t3;
-}
-
 

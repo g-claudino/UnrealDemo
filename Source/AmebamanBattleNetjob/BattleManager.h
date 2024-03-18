@@ -13,6 +13,23 @@
 // TODO make attack function a delegate to remove pawn dependency on the battle manager
 // typedef void (ABattleManager::*AttackDelegate)(FIntVector target);
 
+USTRUCT(BlueprintType)
+struct FHighlightActorProperties {
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	const AActor* Actor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<UMaterialInterface*> Materials;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsHighlighted;
+};
+
 
 UCLASS()
 class AMEBAMANBATTLENETJOB_API ABattleManager : public AActor {
@@ -79,6 +96,8 @@ protected:
 	TArray<TSubclassOf<AGridPawn>> EnemyBlueprint;
 
 private:
+	TMap<const AActor*, FHighlightActorProperties> HighlightedActors;
+
 	void SpawnPlayer(UWorld *world, const FTransform &transform);
 	void SpawnEnemies(UWorld *world, const FTransform &transform);
 };

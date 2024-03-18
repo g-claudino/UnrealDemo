@@ -107,7 +107,14 @@ void ABattleManager::EnemyPreviewAttackDangerArea(const FIntVector targetOffset)
 
 void ABattleManager::ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target){
 	UStaticMeshComponent* staticMesh = Cast<UStaticMeshComponent>(tileData.Tile->GetComponentByClass(UStaticMeshComponent::StaticClass()));
-	// materialsTable.Add() staticMesh->GetMaterial()
+	FHighlightActorProperties properties = {
+		.Actor = tileData.Tile,
+		.StaticMesh = staticMesh,
+		.Materials = staticMesh->GetMaterials(),
+		.IsHighlighted = true,
+	};
+
+	HighlightedActors.Add(tileData.Tile, properties);
 	staticMesh->SetMaterial(0, DangerAreaHighlightMaterial);
 }
 

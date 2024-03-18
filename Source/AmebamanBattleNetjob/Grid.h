@@ -38,7 +38,7 @@ public:
 
 	// Conversions between grid location and world location
 	UFUNCTION(BlueprintCallable)
-	inline FIntVector WorldToGridLocation(FVector location);
+	FIntVector WorldToGridLocation(FVector location);
 	UFUNCTION(BlueprintCallable)
 	bool CalculateTargetGridPosition(const AGridPawn *pawn, FIntVector direction, int32 scale, FIntVector &result);
 	bool CalculateTargetGridPosition(FIntVector currentLocation, FIntVector direction, int32 scale, FIntVector &result);
@@ -46,18 +46,18 @@ public:
 	void MovePawnInGrid(AGridPawn *pawn, FIntVector newLocation);
 
 	UFUNCTION(BlueprintCallable)
-	inline FIntVector GetMovementDirectionX();
+	inline FIntVector GetMovementDirectionX(){ return FIntVector {1, 0, 0}; }
 	UFUNCTION(BlueprintCallable)
-	inline FIntVector GetMovementDirectionY();
+	inline FIntVector GetMovementDirectionY(){ return FIntVector {0, 1, 0}; }
 	UFUNCTION(BlueprintCallable)
-	inline FIntVector GetMovementDirectionZ();
+	inline FIntVector GetMovementDirectionZ(){ return FIntVector {0, 0, 1}; }
 
 	UFUNCTION(BlueprintCallable)
-	inline FVector GridToWorldLocation(FIntVector location);
-	inline FVector GridToWorldLocation(int x, int y, int z);
+	FVector GridToWorldLocation(FIntVector location);
+	FVector GridToWorldLocation(int x, int y, int z);
 
 	UFUNCTION()
-	inline bool IsPawnInGrid(const AGridPawn *pawn);
+	inline bool IsPawnInGrid(const AGridPawn *pawn) { return GridPawnMap.Find(pawn->GetName()) != nullptr; }
 	UFUNCTION()
 	bool GetPawnInfo(AGridPawn *pawn, FTileData& result);
 	bool GetPawnInfo(FIntVector gridLocation, FTileData& result);
@@ -67,9 +67,9 @@ public:
 	FVector Offset;
 
 	// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
-	inline int FIntVectorToGridArrayIndex(int x, int y, int z);
-	inline int FIntVectorToGridArrayIndex(FIntVector index3D);
-	inline FIntVector GridArrayIndexToFIntVector(int idx);
+	int FIntVectorToGridArrayIndex(int x, int y, int z);
+	int FIntVectorToGridArrayIndex(FIntVector index3D);
+	FIntVector GridArrayIndexToFIntVector(int idx);
 	int32 RemovePawnFromGrid(AGridPawn *pawn);
 
 protected:
@@ -83,13 +83,17 @@ protected:
 	TSubclassOf<AGridTile> TileBlueprint;
 
 	UFUNCTION(BlueprintCallable)
-	inline bool IsValidPosition(FIntVector location);
+	inline bool IsValidPosition(FIntVector location) { return IsLocationInBounds(location) && IsGridLocationEmpty(location); }
 	UFUNCTION(BlueprintCallable)
-	inline bool IsLocationInBounds(FIntVector location);
+	inline bool IsLocationInBounds(FIntVector location) {
+		return  location.X >= 0 && location.X < Cells.X &&
+				location.Y >= 0 && location.Y < Cells.Y &&
+				location.Z >= 0 && location.Z < Cells.Z;
+	}
 	UFUNCTION(BlueprintCallable)
-	inline bool IsIndexInBounds(int32 index);
+	inline bool IsIndexInBounds(int32 index) { return index < Cells.X*Cells.Y*Cells.Z; }
 	UFUNCTION(BlueprintCallable)
-	inline bool IsGridLocationEmpty(FIntVector location);
+	inline bool IsGridLocationEmpty(FIntVector location) { return GridData[FIntVectorToGridArrayIndex(location)].Pawn == nullptr; }
 
 private:
 	TArray<FTileData> GridData;
