@@ -83,9 +83,7 @@ void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int dam
 		AGridPawn* gridPawnInLocation = gridData.Pawn;
 		if (IsValid(gridPawnInLocation)){
 			gridPawnInLocation->DamagePawn(damage);
-		} 
-	} else {
-			OnAttackMiss();
+		}
 	}
 }
 
