@@ -40,9 +40,8 @@ protected:
 	void OnAttackMiss();
 	
 	UPROPERTY(EditAnywhere)
-	FVector GridTilesOffset = FVector{110, 110, 1100};
-	UPROPERTY(EditAnywhere)
-	FVector OffsetBetweenGrids = FVector{0,10,0};
+	FVector gridTilesOffset = FVector{110, 110, 1100};
+
 
 	// Player properties
 	UPROPERTY()
@@ -74,8 +73,6 @@ protected:
 	TArray<TSubclassOf<AGridPawn>> EnemyBlueprint;
 
 private:
-	void SpawnPlayerGrid(UWorld *world, const FTransform &transform);
-	void SpawnEnemyGrid(UWorld *world, const FTransform &transform);
-	void SpawnPlayerActor(UWorld *world);
-	void SpawnEnemiesActors(UWorld *world);
+	void SpawnPlayer(UWorld *world, const FTransform &transform);
+	void SpawnEnemies(UWorld *world, const FTransform &transform);
 };
