@@ -36,6 +36,8 @@ protected:
 	void OnBattleWon();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnBattleLost();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAttackMiss();
 	
 	UPROPERTY(EditAnywhere)
 	FVector GridTilesOffset = FVector{110, 110, 1100};
