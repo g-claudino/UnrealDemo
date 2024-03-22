@@ -1,6 +1,11 @@
 # Description
 *Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change.*
 
+## Blueprint/Assets changes
+*Please list all blueprints, assets and editor changes that need to be reviewed in editor*
+
+N/A
+
 ## Consequences
 *List all consequences, both negative and positive, this changes makes and other features that could be affected by these changes.*
 
