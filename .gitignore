@@ -2,7 +2,7 @@
 .ignore
 .vscode/
 AmebamanBattleNetjob.code-workspace
-Output/
+Output/*
 
 # Visual Studio 2015 user specific files
 .vs/
