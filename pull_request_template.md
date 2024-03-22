@@ -3,6 +3,7 @@
 
 ## Blueprint/Assets changes
 *Please list all blueprint/assets/editor changes that we cannot see diff in git so we can check in editor*
+N/A
 
 N/A
 
@@ -17,7 +18,7 @@ N/A
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] This change requires a documentation update
-
+      
 # Checklist:
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my code
