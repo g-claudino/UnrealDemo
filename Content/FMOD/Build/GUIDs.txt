@@ -1,0 +1,8 @@
+{6045f0a4-d608-4ce8-ac7e-c6b7df1c5f36} bank:/Attack
+{990923f7-0269-491f-9dd8-687d40d05f93} bank:/Master
+{01140323-7312-055d-1b91-e283b123590b} bank:/Master.strings
+{62a5ac10-df54-4ed3-b75b-1241e32450dc} bus:/
+{eb4888e8-7882-4cb8-a4d1-d176add8bf70} bus:/Reverb
+{408f3146-31f2-4523-b8f2-47c3a51c3f34} event:/AttackHit
+{49182173-dbe2-41d2-a8da-a32976e16c2e} event:/AttackMade
+{50df80b7-cd80-4a0d-8fb9-05ab216df436} event:/EnemyKilled

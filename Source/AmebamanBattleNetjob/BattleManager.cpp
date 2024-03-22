@@ -24,19 +24,23 @@ void ABattleManager::SetupBattle(){
 	};
 	const FTransform &enemyTransform = {
 		{0, 0, 0}, 
-		{0, 430, 0}, 
+		{0, 0, 0}, 
 		{1, 1, 1} 
 	};
 
-	SpawnPlayer(world, playerTransform);
-	SpawnEnemies(world, enemyTransform);
+	SpawnPlayerGrid(world, playerTransform);
+	SpawnPlayerActor(world);
+	SpawnEnemyGrid(world, enemyTransform);
+	SpawnEnemiesActors(world);
 } 
 
-void ABattleManager::SpawnPlayer(UWorld *world, const FTransform &transform){
+void ABattleManager::SpawnPlayerGrid(UWorld *world, const FTransform &transform){
 	PlayerGrid = world->SpawnActor<AGrid>(PlayerGridBlueprint, transform);
-	PlayerGrid->Offset = gridTilesOffset;
+	PlayerGrid->Offset = GridTilesOffset;
 	PlayerGrid->GenerateGrid(PlayerGridDimensions);
+}
 
+void ABattleManager::SpawnPlayerActor(UWorld *world){
 	Player = world->SpawnActor<AGridPawn>(PlayerBlueprint);
 	Player->Setup(PlayerGrid, this);
 	PlayerGrid->PlacePawnInGrid(Player, PlayerGridInitialLocation);
@@ -45,11 +49,25 @@ void ABattleManager::SpawnPlayer(UWorld *world, const FTransform &transform){
 	controller->Possess(Player);
 }
  
-void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
-	EnemyGrid = world->SpawnActor<AGrid>(EnemyGridBlueprint, transform);
-	EnemyGrid->Offset = gridTilesOffset;
-	EnemyGrid->GenerateGrid(EnemyGridDimensions);
+void ABattleManager::SpawnEnemyGrid(UWorld *world, const FTransform &transform){
+	// Move enemy grid according to Player Grid Size and Center
+	FVector PlayerGridSize = PlayerGrid->GetGridSize();
+	FVector PlayerGridReferenceSize = {0, PlayerGridSize.Y+OffsetBetweenGrids.Y, 0};
 
+	// Generate Enemy Grid
+	EnemyGrid = world->SpawnActor<AGrid>(EnemyGridBlueprint);
+	EnemyGrid->Offset = GridTilesOffset;
+	EnemyGrid->GenerateGrid(EnemyGridDimensions);
+	FVector EnemyGridSize = EnemyGrid->GetGridSize();
+	FVector EnemyGridLocation = {0,PlayerGridReferenceSize.Y+EnemyGridSize.Y,0};
+	
+	// Update Transform
+	FTransform RelocateTransform = transform;
+	RelocateTransform.SetTranslation(EnemyGridLocation);
+	EnemyGrid->SetActorTransform(RelocateTransform);
+}
+
+void ABattleManager::SpawnEnemiesActors(UWorld *world){
 	for(int i = 0; i < EnemyBlueprint.Num(); i++){
 		Enemies.Add(world->SpawnActor<AGridPawn>(EnemyBlueprint[i]));
 		Enemies[i]->Setup(EnemyGrid, this);
@@ -60,7 +78,6 @@ void ABattleManager::SpawnEnemies(UWorld *world, const FTransform &transform){
 		// controller->Possess(enemy);
 	}
 }
-
 
 
 void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){
@@ -83,7 +100,9 @@ void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int dam
 		AGridPawn* gridPawnInLocation = gridData.Pawn;
 		if (IsValid(gridPawnInLocation)){
 			gridPawnInLocation->DamagePawn(damage);
-		}
+		} 
+	} else {
+			OnAttackMiss();
 	}
 }
 

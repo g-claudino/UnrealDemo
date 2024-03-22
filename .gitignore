@@ -2,6 +2,12 @@
 .ignore
 .vscode/
 AmebamanBattleNetjob.code-workspace
+Output/*
+
+# Custom - Fmod files
+Content/FMOD/.user/
+Content/FMOD/.cache/
+Content/FMOD/.unsaved/
 
 # Visual Studio 2015 user specific files
 .vs/
