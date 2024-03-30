@@ -22,7 +22,7 @@
 			]
 		},
 		{
-			"Name": "ClangTidy",
+			"Name": "FMODStudio",
 			"Enabled": true
 		}
 	]

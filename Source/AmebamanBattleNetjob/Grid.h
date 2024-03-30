@@ -63,14 +63,28 @@ public:
 	bool GetPawnInfo(FIntVector gridLocation, FTileData& result);
 	bool GetPawnInfo(int32 gridIndex, FTileData& result);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Offset;
+	UFUNCTION(BlueprintCallable)
+	FVector GetGridSize();
+	
+	UFUNCTION(BlueprintCallable)
+	FVector GetGridCenter();
 
+	UFUNCTION(BlueprintCallable)
+	FVector SetGridSize(FVector newSize);
+	
+	UFUNCTION(BlueprintCallable)
+	FVector SetGridCenter(FVector newCenter);
+	
 	// Conversions between [x, y, z] 3D array to [idx] 1D array of positions
 	int FIntVectorToGridArrayIndex(int x, int y, int z);
 	int FIntVectorToGridArrayIndex(FIntVector index3D);
 	FIntVector GridArrayIndexToFIntVector(int idx);
 	int32 RemovePawnFromGrid(AGridPawn *pawn);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector Offset;
+
+	const FVector TileBaseSize = {100,100,10};
 
 protected:
 	// Called when the game starts or when spawned
@@ -98,4 +112,6 @@ protected:
 private:
 	TArray<FTileData> GridData;
 	TMap<FString, FTileData> GridPawnMap;
+	FVector GridSize;
+	FVector GridCenter;
 };

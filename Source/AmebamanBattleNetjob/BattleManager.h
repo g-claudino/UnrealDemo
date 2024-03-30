@@ -41,8 +41,8 @@ public:
 
 	void PlayerAttackCallback(FIntVector targetOffset, int damage);
 	void EnemyAttackCallback(FIntVector targetOffset, int damage);
-	void ExecuteAttackOnGrid(AGrid* grid, const FTileData& tileData, FIntVector target, int damage);
-	
+	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
+
 	void PlayerPreviewAttackDangerArea(FIntVector targetOffset);
 	void EnemyPreviewAttackDangerArea(FIntVector targetOffset);
 	void ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target);
@@ -60,10 +60,13 @@ protected:
 	void OnBattleWon();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnBattleLost();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAttackMiss();
 	
 	UPROPERTY(EditAnywhere)
-	FVector gridTilesOffset = FVector{110, 110, 1100};
-
+	FVector GridTilesOffset = FVector{110, 110, 1100};
+	UPROPERTY(EditAnywhere)
+	FVector OffsetBetweenGrids = FVector{0,10,0};
 
 	// Player properties
 	UPROPERTY()
@@ -97,6 +100,8 @@ protected:
 private:
 	TMap<const AActor*, FHighlightActorProperties> HighlightedActors;
 
-	void SpawnPlayer(UWorld *world, const FTransform &transform);
-	void SpawnEnemies(UWorld *world, const FTransform &transform);
+	void SpawnPlayerGrid(UWorld *world, const FTransform &transform);
+	void SpawnEnemyGrid(UWorld *world, const FTransform &transform);
+	void SpawnPlayerActor(UWorld *world);
+	void SpawnEnemiesActors(UWorld *world);
 };

@@ -51,6 +51,14 @@ void AGrid::GenerateGrid(int width, int depth, int height) {
 		tileExtent.Z*Cells.Z
 	);
 
+	// To export the total grid size we need to add the size between each tile inside the grid
+	FVector offsetBetweenTiles = Offset - TileBaseSize;
+	FVector gridOffsetSize = FVector(offsetBetweenTiles.X*(Cells.X-1)/2.0,
+									 offsetBetweenTiles.Y*(Cells.Y-1)/2.0, 
+									 offsetBetweenTiles.Z*(Cells.Z-1)/2.0);
+	GridSize = gridSize+gridOffsetSize;
+	GridCenter = tileCenter;
+
 	// we clean the temp actor
 	tempActor->Destroy();
 
@@ -201,4 +209,22 @@ int32 AGrid::RemovePawnFromGrid(AGridPawn *pawn){
 	}
 
 	return GridPawnMap.Num();
+}
+
+inline FVector AGrid::GetGridSize(){
+	return GridSize;
+}
+
+inline FVector AGrid::GetGridCenter(){
+	return GridCenter;
+}
+
+inline FVector AGrid::SetGridSize(FVector newSize){
+	GridSize = newSize;
+	return GridSize;
+}
+
+inline FVector AGrid::SetGridCenter(FVector newCenter){
+	GridCenter = newCenter;
+	return GridCenter;
 }
