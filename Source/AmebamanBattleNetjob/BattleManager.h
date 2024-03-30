@@ -46,6 +46,7 @@ public:
 	void PlayerPreviewAttackDangerArea(FIntVector targetOffset);
 	void EnemyPreviewAttackDangerArea(FIntVector targetOffset);
 	void ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target);
+	void SyncDangerAreaHighlights();
 
 	UFUNCTION(BlueprintCallable)
 	void RemovePawnFromGrid(AGridPawn* pawn);
@@ -62,8 +63,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	FVector gridTilesOffset = FVector{110, 110, 1100};
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UMaterial* DangerAreaHighlightMaterial;
 
 
 	// Player properties

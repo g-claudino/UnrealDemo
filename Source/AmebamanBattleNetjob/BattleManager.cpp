@@ -106,6 +106,9 @@ void ABattleManager::EnemyPreviewAttackDangerArea(const FIntVector targetOffset)
 }
 
 void ABattleManager::ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target){
+
+	SyncDangerAreaHighlights();
+
 	UStaticMeshComponent* staticMesh = Cast<UStaticMeshComponent>(tileData.Tile->GetComponentByClass(UStaticMeshComponent::StaticClass()));
 	FHighlightActorProperties properties = {
 		.Actor = tileData.Tile,
@@ -114,10 +117,23 @@ void ABattleManager::ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData
 		.IsHighlighted = true,
 	};
 
-	HighlightedActors.Add(tileData.Tile, properties);
-	staticMesh->SetMaterial(0, DangerAreaHighlightMaterial);
-}
+	UMaterialInstanceDynamic* currentMaterial = staticMesh->CreateDynamicMaterialInstance(0);
+	currentMaterial->SetScalarParameterValue("FresnelBlend", 1.0);
 
+
+	HighlightedActors.Add(tileData.Tile, properties);
+	staticMesh->SetMaterial(0, currentMaterial);
+}
+	
+void ABattleManager::SyncDangerAreaHighlights(){
+	for (auto& actor : HighlightedActors){
+		FHighlightActorProperties& tileData = actor.Value;
+
+		for(int materialIdx = 0; materialIdx < tileData.Materials.Num(); materialIdx++){
+			tileData.StaticMesh->SetMaterial(materialIdx, tileData.Materials[materialIdx]);
+		}
+	}
+}
 
 void ABattleManager::RemovePawnFromGrid(AGridPawn* pawn){
 	if(EnemyGrid->IsPawnInGrid(pawn)){
