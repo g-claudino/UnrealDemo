@@ -45,7 +45,7 @@ void AGridPawn::DamagePawn(int32 damage){
 }
 
 // TODO need to setup callback for this so we dont need to keep track which pawn this is, if its player or the enemy
-void AGridPawn::PreviewAttackDangerArea(const FIntVector target){
-	BattleManager->PlayerPreviewAttackDangerArea(target);
+void AGridPawn::PreviewAttackDangerArea(const FIntVector targetOffset){
+	BattleManager->PlayerPreviewAttackDangerArea(targetOffset);
 }
 

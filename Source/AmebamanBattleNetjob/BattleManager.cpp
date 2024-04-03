@@ -141,7 +141,6 @@ void ABattleManager::ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData
 	UMaterialInstanceDynamic* currentMaterial = staticMesh->CreateDynamicMaterialInstance(0);
 	currentMaterial->SetScalarParameterValue("FresnelBlend", 1.0);
 
-
 	HighlightedActors.Add(tileData.Tile, properties);
 	staticMesh->SetMaterial(0, currentMaterial);
 }
@@ -154,6 +153,7 @@ void ABattleManager::SyncDangerAreaHighlights(){
 			tileData.StaticMesh->SetMaterial(materialIdx, tileData.Materials[materialIdx]);
 		}
 	}
+	HighlightedActors.Reset();
 }
 
 void ABattleManager::RemovePawnFromGrid(AGridPawn* pawn){
