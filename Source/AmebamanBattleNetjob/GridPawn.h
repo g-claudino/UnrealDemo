@@ -25,7 +25,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Setup(AGrid *grid, ABattleManager *battleManager);
 
-	float GetCollisionHalfHeight();
+	inline float GetCollisionHalfHeight() { return CapsuleCollision->GetScaledCapsuleHalfHeight(); }
 
 	UFUNCTION(BlueprintCallable)
 	void DamagePawn(int32 damage);
@@ -46,17 +46,25 @@ protected:
 
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnDamageTaken(int32 damage, int32 health);
+	void OnDamageTaken(const int32 damage, const int32 health);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPawnKilled();
 
 	UFUNCTION(BlueprintCallable)
-	void Attack(FIntVector target);
+	void Attack(const FIntVector target);
 
 	UFUNCTION(BlueprintCallable)
-	float Smoothstep(float t);
+	inline float Smoothstep(float t) {
+		float t3 = t*t*t;
+		float t4 = t3*t;
+		float t5 = t4*t;
+		return 6*t5 - 15*t4 + 10*t3;
+	}
 	
 private:
 	UPROPERTY()
 	UCapsuleComponent *CapsuleCollision;
+
+	UFUNCTION(BlueprintCallable)
+	void PreviewAttackDangerArea(const FIntVector target);
 };

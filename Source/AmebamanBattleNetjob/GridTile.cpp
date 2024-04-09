@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Engine/EngineTypes.h" 
 #include "GridTile.h"
+#include "Engine/EngineTypes.h" 
 
 AGridTile::AGridTile() {
 	PrimaryActorTick.bCanEverTick = false; // disable update until e actually need it

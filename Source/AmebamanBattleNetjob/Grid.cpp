@@ -16,7 +16,7 @@ void AGrid::BeginPlay() {
 	Super::BeginPlay();
 }
 
-inline void AGrid::GenerateGrid(FIntVector dimensions){
+void AGrid::GenerateGrid(FIntVector dimensions){
 	GenerateGrid(dimensions.X, dimensions.Y, dimensions.Z);
 }
 
@@ -113,11 +113,11 @@ void AGrid::PlacePawnInGrid(AGridPawn *pawn, FIntVector gridPosition){
 
 
 // Conversions between grid location and world location
-inline FIntVector AGrid::WorldToGridLocation(FVector location) {
+FIntVector AGrid::WorldToGridLocation(FVector location) {
 	return {};
 }
 
-inline FVector AGrid::GridToWorldLocation(int x, int y, int z) {
+FVector AGrid::GridToWorldLocation(int x, int y, int z) {
 	int gridIndex = FIntVectorToGridArrayIndex(x, y, z);
 	auto cell = GridData[gridIndex].Tile;
 	float halfHeight = cell->GetSimpleCollisionHalfHeight();
@@ -126,22 +126,8 @@ inline FVector AGrid::GridToWorldLocation(int x, int y, int z) {
 	return cellLocation; 
 }
 
-inline FVector AGrid::GridToWorldLocation(FIntVector location) {
+FVector AGrid::GridToWorldLocation(FIntVector location) {
 	return GridToWorldLocation(location.X, location.Y, location.Z);
-}
-
-inline bool AGrid::IsValidPosition(FIntVector location){
-	return IsLocationInBounds(location) && IsGridLocationEmpty(location);
-}
-
-inline bool AGrid::IsLocationInBounds(FIntVector location){
-	return  location.X >= 0 && location.X < Cells.X &&
-			location.Y >= 0 && location.Y < Cells.Y &&
-			location.Z >= 0 && location.Z < Cells.Z;
-}
-
-inline bool AGrid::IsGridLocationEmpty(FIntVector location){
-	return GridData[FIntVectorToGridArrayIndex(location)].Pawn == nullptr;
 }
 
 
@@ -160,7 +146,6 @@ bool AGrid::CalculateTargetGridPosition(FIntVector currentLocation, FIntVector d
 	}
 }
 
-
 // This method doesn't physically move the pawn in the engine, just update it's current grid coordinates
 void AGrid::MovePawnInGrid(AGridPawn *pawn, FIntVector newLocation){
 	GridData[GridPawnMap[pawn->GetName()].Id].Pawn = nullptr;
@@ -168,22 +153,16 @@ void AGrid::MovePawnInGrid(AGridPawn *pawn, FIntVector newLocation){
 	GridPawnMap[pawn->GetName()] = GridData[FIntVectorToGridArrayIndex(newLocation)];
 }
 
-
-inline FIntVector AGrid::GetMovementDirectionX(){ return FIntVector {1, 0, 0}; }
-inline FIntVector AGrid::GetMovementDirectionY(){ return FIntVector {0, 1, 0}; }
-inline FIntVector AGrid::GetMovementDirectionZ(){ return FIntVector {0, 0, 1}; }
-
-
 // Conversions between [x, y, z] 3D array to [idx] 1D array of positions
-inline int AGrid::FIntVectorToGridArrayIndex(int x, int y, int z) {
+int AGrid::FIntVectorToGridArrayIndex(int x, int y, int z) {
     return (z * Cells.X * Cells.Y) + (y * Cells.X) + x;
 }
 
-inline int AGrid::FIntVectorToGridArrayIndex(FIntVector index3D) {
+int AGrid::FIntVectorToGridArrayIndex(FIntVector index3D) {
     return (index3D.Z * Cells.X * Cells.Y) + (index3D.Y * Cells.X) + index3D.X;
 }
 
-inline FIntVector AGrid::GridArrayIndexToFIntVector(int idx) {
+FIntVector AGrid::GridArrayIndexToFIntVector(int idx) {
     int z = idx / (Cells.X * Cells.Y);
     idx -= (z * Cells.X * Cells.Y);
     int y = idx / Cells.X;
@@ -191,9 +170,6 @@ inline FIntVector AGrid::GridArrayIndexToFIntVector(int idx) {
     return FIntVector(x, y, z);
 }
 
-inline bool AGrid::IsPawnInGrid(const AGridPawn *pawn){
-	return GridPawnMap.Find(pawn->GetName()) != nullptr;
-}
 
 bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) { 
 	FTileData* data = GridPawnMap.Find(pawn->GetName());
@@ -206,14 +182,19 @@ bool AGrid::GetPawnInfo(AGridPawn *pawn, FTileData& result) {
 }
 
 bool AGrid::GetPawnInfo(FIntVector gridLocation, FTileData& result) {
-	FTileData data = GridData[FIntVectorToGridArrayIndex(gridLocation)];
-	if (!IsValid(data.Pawn)){
+	return GetPawnInfo(FIntVectorToGridArrayIndex(gridLocation), result);
+}
+
+bool AGrid::GetPawnInfo(int32 gridIndex, FTileData& result){
+	if(!IsIndexInBounds(gridIndex)){
+		UE_LOG(LogTemp, Error, TEXT("[%s.GetPawnInfo()] Trying to access invalid position '%d' in grid!"), gridIndex);
 		return false;
 	}
 
-	result = data;
+	result = GridData[gridIndex];
 	return true;
 }
+
 
 int32 AGrid::RemovePawnFromGrid(AGridPawn *pawn){
 	if(!IsValid(pawn)) {

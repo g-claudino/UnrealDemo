@@ -13,6 +13,23 @@
 // TODO make attack function a delegate to remove pawn dependency on the battle manager
 // typedef void (ABattleManager::*AttackDelegate)(FIntVector target);
 
+USTRUCT(BlueprintType)
+struct FHighlightActorProperties {
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	const AActor* Actor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<UMaterialInterface*> Materials;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool IsHighlighted;
+};
+
 
 UCLASS()
 class AMEBAMANBATTLENETJOB_API ABattleManager : public AActor {
@@ -21,9 +38,16 @@ class AMEBAMANBATTLENETJOB_API ABattleManager : public AActor {
 public:	
 	// Sets default values for this actor's properties
 	ABattleManager();
-	void PlayerAttackCallback(FIntVector target_offset, int damage);
-	void EnemyAttackCallback(FIntVector target_offset, int damage);
+
+	void PlayerAttackCallback(FIntVector targetOffset, int damage);
+	void EnemyAttackCallback(FIntVector targetOffset, int damage);
 	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
+
+	void PlayerPreviewAttackDangerArea(FIntVector targetOffset);
+	void EnemyPreviewAttackDangerArea(FIntVector targetOffset);
+	void ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target);
+	void SyncDangerAreaHighlights();
+
 	UFUNCTION(BlueprintCallable)
 	void RemovePawnFromGrid(AGridPawn* pawn);
 
@@ -74,6 +98,8 @@ protected:
 	TArray<TSubclassOf<AGridPawn>> EnemyBlueprint;
 
 private:
+	TMap<const AActor*, FHighlightActorProperties> HighlightedActors;
+
 	void SpawnPlayerGrid(UWorld *world, const FTransform &transform);
 	void SpawnEnemyGrid(UWorld *world, const FTransform &transform);
 	void SpawnPlayerActor(UWorld *world);

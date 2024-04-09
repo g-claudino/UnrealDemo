@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Kismet/GameplayStatics.h" 
 #include "BattleManager.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -24,7 +24,7 @@ void ABattleManager::SetupBattle(){
 	};
 	const FTransform &enemyTransform = {
 		{0, 0, 0}, 
-		{0, 0, 0}, 
+		{0, 0, 0},
 		{1, 1, 1} 
 	};
 
@@ -60,7 +60,7 @@ void ABattleManager::SpawnEnemyGrid(UWorld *world, const FTransform &transform){
 	EnemyGrid->GenerateGrid(EnemyGridDimensions);
 	FVector EnemyGridSize = EnemyGrid->GetGridSize();
 	FVector EnemyGridLocation = {0,PlayerGridReferenceSize.Y+EnemyGridSize.Y,0};
-	
+
 	// Update Transform
 	FTransform RelocateTransform = transform;
 	RelocateTransform.SetTranslation(EnemyGridLocation);
@@ -102,8 +102,58 @@ void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int dam
 			gridPawnInLocation->DamagePawn(damage);
 		} 
 	} else {
-			OnAttackMiss();
+		OnAttackMiss();
 	}
+}
+
+
+void ABattleManager::PlayerPreviewAttackDangerArea(FIntVector targetOffset){
+	FTileData playerTileData;
+	if (!PlayerGrid->GetPawnInfo(Player, playerTileData)) return;
+
+	int playerLocationId = playerTileData.Id;
+	FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationId);
+	FIntVector target = playerLocationVec + targetOffset;
+
+	FTileData enemyTileData;
+	if(EnemyGrid->GetPawnInfo(target, enemyTileData)){
+		ExecutePreviewAttackDangerArea(EnemyGrid, enemyTileData, target);
+	}
+}
+
+void ABattleManager::EnemyPreviewAttackDangerArea(const FIntVector targetOffset){
+	const FTileData tileData = {};
+	ExecutePreviewAttackDangerArea(PlayerGrid, tileData, targetOffset);
+}
+
+void ABattleManager::ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target){
+
+	SyncDangerAreaHighlights();
+
+	UStaticMeshComponent* staticMesh = Cast<UStaticMeshComponent>(tileData.Tile->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	FHighlightActorProperties properties = {
+		.Actor = tileData.Tile,
+		.StaticMesh = staticMesh,
+		.Materials = staticMesh->GetMaterials(),
+		.IsHighlighted = true,
+	};
+
+	UMaterialInstanceDynamic* currentMaterial = staticMesh->CreateDynamicMaterialInstance(0);
+	currentMaterial->SetScalarParameterValue("FresnelBlend", 1.0);
+
+	HighlightedActors.Add(tileData.Tile, properties);
+	staticMesh->SetMaterial(0, currentMaterial);
+}
+
+void ABattleManager::SyncDangerAreaHighlights(){
+	for (auto& actor : HighlightedActors){
+		FHighlightActorProperties& tileData = actor.Value;
+
+		for(int materialIdx = 0; materialIdx < tileData.Materials.Num(); materialIdx++){
+			tileData.StaticMesh->SetMaterial(materialIdx, tileData.Materials[materialIdx]);
+		}
+	}
+	HighlightedActors.Reset();
 }
 
 void ABattleManager::RemovePawnFromGrid(AGridPawn* pawn){
