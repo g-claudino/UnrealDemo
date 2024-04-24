@@ -29,10 +29,17 @@ void AGridPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-// TODO need to setup callback for this so we dont need to keep track which pawn this is, if its player or the enemy
-void AGridPawn::Attack(const FIntVector target){
-	// TODO need to provide a damage source for this hardcoded value
-	BattleManager->PlayerAttackCallback(target, 1); 
+void AGridPawn::Attack(const FIntVector targetOffset, int damage){
+	FTileData tileData;
+
+	if (Grid->GetPawnInfo(this, tileData)){
+		int pawnLocationID = tileData.Id;
+		FIntVector playerLocationVec = Grid->GridArrayIndexToFIntVector(pawnLocationID);
+		FIntVector target = playerLocationVec+targetOffset;
+		BattleManager->AttackFromGrid(Grid, target, damage); 
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[%s.Attack()] Couldn't find pawn data in grid %s"), *GetName(), *Grid->GetName());
 }
 
 void AGridPawn::DamagePawn(int32 damage){
@@ -44,8 +51,17 @@ void AGridPawn::DamagePawn(int32 damage){
 	}
 }
 
-// TODO need to setup callback for this so we dont need to keep track which pawn this is, if its player or the enemy
 void AGridPawn::PreviewAttackDangerArea(const FIntVector targetOffset){
-	BattleManager->PlayerPreviewAttackDangerArea(targetOffset);
+		FTileData tileData;
+
+	if (Grid->GetPawnInfo(this, tileData)){
+		int pawnLocationID = tileData.Id;
+		FIntVector playerLocationVec = Grid->GridArrayIndexToFIntVector(pawnLocationID);
+		FIntVector target = playerLocationVec+targetOffset;
+		BattleManager->PreviewAttackDangerArea(Grid, target); 
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[%s.Attack()] Couldn't find pawn data in grid %s"), *GetName(), *Grid->GetName());
+
 }
 

@@ -10,9 +10,6 @@
 #include "GameFramework/Actor.h"
 #include "BattleManager.generated.h"
 
-// TODO make attack function a delegate to remove pawn dependency on the battle manager
-// typedef void (ABattleManager::*AttackDelegate)(FIntVector target);
-
 USTRUCT(BlueprintType)
 struct FHighlightActorProperties {
 	GENERATED_USTRUCT_BODY()
@@ -39,13 +36,8 @@ public:
 	// Sets default values for this actor's properties
 	ABattleManager();
 
-	void PlayerAttackCallback(FIntVector targetOffset, int damage);
-	void EnemyAttackCallback(FIntVector targetOffset, int damage);
-	void ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage);
-
-	void PlayerPreviewAttackDangerArea(FIntVector targetOffset);
-	void EnemyPreviewAttackDangerArea(FIntVector targetOffset);
-	void ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target);
+	void AttackFromGrid(AGrid* sourceGrid, FIntVector target, int damage);
+	void PreviewAttackDangerArea(AGrid* sourceGrid, FIntVector target);
 	void SyncDangerAreaHighlights();
 
 	UFUNCTION(BlueprintCallable)
@@ -66,7 +58,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FVector GridTilesOffset = FVector{110, 110, 1100};
 	UPROPERTY(EditAnywhere)
-	FVector OffsetBetweenGrids = FVector{0,10,0};
+	FVector OffsetBetweenGrids = FVector{0, 10, 0};
 
 	// Player properties
 	UPROPERTY()
