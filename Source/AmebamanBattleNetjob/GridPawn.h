@@ -51,7 +51,7 @@ protected:
 	void OnPawnKilled();
 
 	UFUNCTION(BlueprintCallable)
-	void Attack(const FIntVector target);
+	void Attack(const FIntVector targetOffset, int damage=1);
 
 	UFUNCTION(BlueprintCallable)
 	inline float Smoothstep(float t) {

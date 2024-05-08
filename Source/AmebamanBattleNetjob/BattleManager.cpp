@@ -59,7 +59,7 @@ void ABattleManager::SpawnEnemyGrid(UWorld *world, const FTransform &transform){
 	EnemyGrid->Offset = GridTilesOffset;
 	EnemyGrid->GenerateGrid(EnemyGridDimensions);
 	FVector EnemyGridSize = EnemyGrid->GetGridSize();
-	FVector EnemyGridLocation = {0,PlayerGridReferenceSize.Y+EnemyGridSize.Y,0};
+	FVector EnemyGridLocation = {0, PlayerGridReferenceSize.Y+EnemyGridSize.Y, 0};
 
 	// Update Transform
 	FTransform RelocateTransform = transform;
@@ -72,32 +72,21 @@ void ABattleManager::SpawnEnemiesActors(UWorld *world){
 		Enemies.Add(world->SpawnActor<AGridPawn>(EnemyBlueprint[i]));
 		Enemies[i]->Setup(EnemyGrid, this);
 		EnemyGrid->PlacePawnInGrid(Enemies[i], EnemiesGridInitialLocation[i]);
-
-		// TODO: Create AI controller for this
-		// auto controller = UGameplayStatics::GetSOMEAIController(world, 0);
-		// controller->Possess(enemy);
 	}
 }
 
 
-void ABattleManager::PlayerAttackCallback(FIntVector target_offset, int damage){
+void ABattleManager::AttackFromGrid(AGrid* sourceGrid, FIntVector targetOffset, int damage){
 	FTileData tileData;
-	if (PlayerGrid->GetPawnInfo(Player, tileData)){
-		int playerLocationID = tileData.Id;
-		FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationID);
-		FIntVector target = playerLocationVec+target_offset;
-		ExecuteAttackOnGrid(EnemyGrid, target, damage);
+	AGrid* targetGrid = EnemyGrid;
+
+	// invert target grid
+	if(sourceGrid == EnemyGrid){
+		targetGrid = PlayerGrid;
 	}
-}
 
-void ABattleManager::EnemyAttackCallback(FIntVector target_offset, int damage){
-	ExecuteAttackOnGrid(PlayerGrid, target_offset, damage);
-}
-
-void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int damage){
-	FTileData gridData;
-	if (grid->GetPawnInfo(target, gridData)){
-		AGridPawn* gridPawnInLocation = gridData.Pawn;
+	if (targetGrid->GetPawnInfo(targetOffset, tileData)){
+		AGridPawn* gridPawnInLocation = tileData.Pawn;
 		if (IsValid(gridPawnInLocation)){
 			gridPawnInLocation->DamagePawn(damage);
 		} 
@@ -106,27 +95,18 @@ void ABattleManager::ExecuteAttackOnGrid(AGrid* grid, FIntVector target, int dam
 	}
 }
 
+void ABattleManager::PreviewAttackDangerArea(AGrid* sourceGrid, FIntVector target){
+	FTileData tileData;
+	AGrid* targetGrid = EnemyGrid;
 
-void ABattleManager::PlayerPreviewAttackDangerArea(FIntVector targetOffset){
-	FTileData playerTileData;
-	if (!PlayerGrid->GetPawnInfo(Player, playerTileData)) return;
-
-	int playerLocationId = playerTileData.Id;
-	FIntVector playerLocationVec = PlayerGrid->GridArrayIndexToFIntVector(playerLocationId);
-	FIntVector target = playerLocationVec + targetOffset;
-
-	FTileData enemyTileData;
-	if(EnemyGrid->GetPawnInfo(target, enemyTileData)){
-		ExecutePreviewAttackDangerArea(EnemyGrid, enemyTileData, target);
+	// invert target grid
+	if(sourceGrid == EnemyGrid){
+		targetGrid = PlayerGrid;
 	}
-}
 
-void ABattleManager::EnemyPreviewAttackDangerArea(const FIntVector targetOffset){
-	const FTileData tileData = {};
-	ExecutePreviewAttackDangerArea(PlayerGrid, tileData, targetOffset);
-}
-
-void ABattleManager::ExecutePreviewAttackDangerArea(AGrid* grid, const FTileData& tileData, FIntVector target){
+	if(!targetGrid->GetPawnInfo(target, tileData)) {
+		return;
+	}
 
 	SyncDangerAreaHighlights();
 
